@@ -9,6 +9,7 @@ namespace BlazorShop.Shared
     public class Product
     {
         //Add the class in _Imports.razor
+        //Add global using BlazorShop.Shared; to program.cs for the controller
         #region Properties
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty; //To avoid null reference exeption
