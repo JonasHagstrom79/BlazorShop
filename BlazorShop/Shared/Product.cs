@@ -8,6 +8,7 @@ namespace BlazorShop.Shared
 {
     public class Product
     {
+        //Add the class in _Imports.razor
         #region Properties
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty; //To avoid null reference exeption
