@@ -5,9 +5,18 @@
     margin-bottom: 10px;
     transition: transform .2s;
 }
-
+/*scale of the img object while hovering*/
 .media-img:hover{
-    transform: scale(1.1);
+    transform: scale(2.1);
+}
+/*for the text to be to the right of the image*/
+.media{
+    display: flex;
+    align-items: flex-start;
+}
+/*for the text to be to the right of th image*/
+.media-body{
+    flex: 1;
 }
 
 .media-img-wrapper {
