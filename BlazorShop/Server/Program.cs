@@ -1,6 +1,6 @@
 global using BlazorShop.Shared;
 global using Microsoft.EntityFrameworkCore;
-using BlazorShop.Server.Data;
+global using BlazorShop.Server.Data;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
