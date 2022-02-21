@@ -17,9 +17,17 @@ namespace BlazorShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts() //adds from swagger
         {
             //Get products from datacontext
-            var result = await _productService.GetProductAsync();
+            var result = await _productService.GetProductsAsync();
             return Ok(result);
             //Ok är 200, går att returnera endra saker vid olika responses, coolt
+        }
+
+        [HttpGet("{productId}")]//the [Route] added to the [HtttpGet]       
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProduct(int productId) //adds from swagger
+        {
+            //Get one product from server
+            var result = await _productService.GetProductAsync(productId);
+            return Ok(result);            
         }
     }
 }
