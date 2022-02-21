@@ -9,6 +9,10 @@
             _context = context;
         }
 
+        /// <summary>
+        /// Get the Products from DB
+        /// </summary>
+        /// <returns>Products</returns>
         public async Task<ServiceResponse<List<Product>>> GetProductAsync()
         {
             var response = new ServiceResponse<List<Product>>
