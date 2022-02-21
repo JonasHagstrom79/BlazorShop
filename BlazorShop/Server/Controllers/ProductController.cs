@@ -39,7 +39,7 @@ namespace BlazorShop.Server.Controllers
         #endregion
 
         [HttpGet]        
-        public async Task<IActionResult> GetProduct() 
+        public async Task<ActionResult<List<Product>>> GetProduct() //adds from swagger
         {
             return Ok(products);
             //Ok är 200, går att returnera endra saker vid olika responses, coolt
