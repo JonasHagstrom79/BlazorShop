@@ -1,4 +1,6 @@
-﻿namespace BlazorShop.Server.Data
+﻿using BlazorShop.Server.Seed;
+
+namespace BlazorShop.Server.Data
 {
     public class DataContext : DbContext //for context
     {
@@ -6,6 +8,13 @@
         {
 
         }
+
+        //Seed data
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        {
+            modelBuilder.Seed();            
+        }
+
         //adds to the database
         public DbSet<Product> Products { get; set; }
     }
