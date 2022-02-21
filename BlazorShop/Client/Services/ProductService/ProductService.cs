@@ -11,10 +11,23 @@
         }
         public List<Product> Products { get; set; }
 
+
+        /// <summary>
+        /// Gets a Product on the client
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns>Product</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ServiceResponse<Product>> GetProduct(int productId)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}"); //add a parameter to the string
+            return result;
+        }
+
         /// <summary>
         /// Get the products from the Database
         /// </summary>
-        /// <returns>Products</returns>
+        /// <returns>List Products</returns>
         public async Task GetProducts()
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product");
