@@ -7,7 +7,7 @@
 }
 /*scale of the img object while hovering*/
 .media-img:hover{
-    transform: scale(2.1);
+    transform: scale(1.1);
 }
 /*for the text to be to the right of the image*/
 .media{
@@ -22,10 +22,6 @@
 .media-img-wrapper {
     width: 200px;
     text-align: center;
-}
-
-.price{
-    color: green;
 }
 
 @media (max-width: 1023.98px){
