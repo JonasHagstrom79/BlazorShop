@@ -6,19 +6,19 @@ namespace BlazorShop.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
-    {
-        private readonly DataContext _context;
+    {        
+        private readonly IProductService _productService;
 
-        public ProductController(DataContext context)//dependency injection, made global
-        {
-            _context = context;
+        public ProductController(IProductService productService)//dependency injection, made global
+        {            
+            _productService = productService;
         }
         [HttpGet]        
-        public async Task<ActionResult<List<Product>>> GetProduct() //adds from swagger
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts() //adds from swagger
         {
             //Get products from datacontext
-            var products = await _context.Products.ToListAsync(); 
-            return Ok(products);
+            var result = await _productService.GetProductAsync();
+            return Ok(result);
             //Ok är 200, går att returnera endra saker vid olika responses, coolt
         }
     }
