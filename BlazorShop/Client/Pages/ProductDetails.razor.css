@@ -12,6 +12,11 @@
 }
 
 @media(max-width: 1023.98px){
+    /*Makes the text go under the picture when screen resolution below 1024*/
+    .media {
+        flex-direction: column;
+    }
+    
     .media-img{
         max-width: 300px;
     }

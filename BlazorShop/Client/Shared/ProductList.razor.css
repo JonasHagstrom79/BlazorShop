@@ -9,21 +9,13 @@
 .media-img:hover{
     transform: scale(1.1);
 }
-/*for the text to be to the right of the image*/
-.media{
-    display: flex;
-    align-items: flex-start;
-}
-/*for the text to be to the right of th image*/
-.media-body{
-    flex: 1;
-}
 
 .media-img-wrapper {
     width: 200px;
     text-align: center;
 }
 
+/*Resolution below 1024*/
 @media (max-width: 1023.98px){
     .media{
         flex-direction:column;
@@ -33,3 +25,5 @@
         height: auto;
     }
 }
+
+

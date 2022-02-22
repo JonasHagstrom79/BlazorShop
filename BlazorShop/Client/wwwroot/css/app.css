@@ -66,3 +66,13 @@ a, .btn-link {
 .price {
     color: green;
 }
+
+/*for the text to be to the right of the image*/
+.media {
+    display: flex;
+    align-items: flex-start;
+}
+/*for the text to be to the right of th image*/
+.media-body {
+    flex: 1;
+}
