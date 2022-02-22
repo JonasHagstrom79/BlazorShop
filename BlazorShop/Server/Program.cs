@@ -2,6 +2,7 @@ global using BlazorShop.Shared;
 global using Microsoft.EntityFrameworkCore;
 global using BlazorShop.Server.Data;
 global using BlazorShop.Server.Services.ProductServices;
+global using BlazorShop.Server.Services.CategoryServices;
 using Microsoft.AspNetCore.ResponseCompression;
 
 
@@ -21,6 +22,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();//added
 builder.Services.AddSwaggerGen(); //add swagger
 builder.Services.AddScoped<IProductService, ProductService>(); //for dependencyinjections and use of product && Iproduct
+builder.Services.AddScoped<ICategoryService, CategoryService>(); //As above, add global using att top
 
 var app = builder.Build();
 
