@@ -18,6 +18,8 @@ namespace BlazorShop.Shared
         public string ImageUrl { get; set; } = string.Empty;
         [Column(TypeName= "decimal(18,2)")] //define the digits for the model
         public decimal Price { get; set; }//price
+        public Category? Category { get; set; } //Link to category
+        public int CategoryId { get; set; } //FKey
         #endregion
     }
 }
