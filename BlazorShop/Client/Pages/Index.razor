@@ -1,5 +1,18 @@
 ﻿@page "/"
+@page "/{categoryUrl}"
+@inject IProductService productService
 
 <PageTitle>My Shop</PageTitle>
 
 <ProductList />
+
+@code {
+    //Add lifecycle method here    
+    [Parameter]
+    public string? CategoryUrl { get; set; } = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await productService.GetProductsAsync(CategoryUrl); //in the productList.razor coponent
+    }
+}

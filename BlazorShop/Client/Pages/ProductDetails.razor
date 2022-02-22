@@ -34,7 +34,7 @@ else
     {
         Message = "Loading Product..";
         //where the product id ecuals the given id
-        var result = await ProductService.GetProduct(Id);
+        var result = await ProductService.GetProductAsync(Id);
         if (!result.Success)
         {
             Message = result.Message;
