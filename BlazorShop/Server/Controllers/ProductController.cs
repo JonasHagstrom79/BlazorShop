@@ -14,7 +14,7 @@ namespace BlazorShop.Server.Controllers
             _productService = productService;
         }
         [HttpGet]        
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts() //adds from swagger
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsAsync() //adds from swagger
         {
             //Get products from datacontext
             var result = await _productService.GetProductsAsync();
@@ -23,11 +23,19 @@ namespace BlazorShop.Server.Controllers
         }
 
         [HttpGet("{productId}")]//the [Route] added to the [HtttpGet]       
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProduct(int productId) //adds from swagger
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductAsync(int productId) //adds from swagger
         {
             //Get one product from server
             var result = await _productService.GetProductAsync(productId);
             return Ok(result);            
+        }
+
+        [HttpGet("category/{categoryUrl}")] //To get the products from the server
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategoryAsync(string categoryUrl) //adds from swagger
+        {
+            //Get one product from server
+            var result = await _productService.GetProductsByCategoryAsync(categoryUrl);
+            return Ok(result);
         }
     }
 }
