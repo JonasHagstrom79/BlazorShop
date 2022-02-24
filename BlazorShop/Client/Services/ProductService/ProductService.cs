@@ -11,6 +11,8 @@
         }
         public List<Product> Products { get; set; }
 
+        public event Action ProductsChanged; //Event lisener
+
 
         /// <summary>
         /// Gets a Product on the client
@@ -28,13 +30,17 @@
         /// Get the products from the Database
         /// </summary>
         /// <returns>List Products</returns>
-        public async Task GetProducts()
+        public async Task GetProducts(string? categoryUrl = null)
         {
-            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product");
+            var result = categoryUrl == null ? //use ternery operator 
+                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product") : //if null use this call(IproductService)
+                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}"); //if not null use this(IproductService)
             if (result != null && result.Data != null)
             {
                 Products = result.Data;
-            }            
-        }
+            }
+            //Invoke event at the end, need to be or the site will crash
+            ProductsChanged.Invoke();//Go to Index.razor
+        }        
     }
 }
