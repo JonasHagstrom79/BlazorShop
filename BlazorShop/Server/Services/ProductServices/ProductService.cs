@@ -58,5 +58,26 @@
             };
             return response;
         }
+
+        /// <summary>
+        /// Search title and description of Product
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <returns></returns>
+        public async Task<ServiceResponse<List<Product>>> SearchProductsAsync(string searchText) //Add to controller always!
+        {
+            //title and description search
+            var response = new ServiceResponse<List<Product>>
+            {
+                Data = await _context.Products
+                    .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
+                    ||
+                    p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
+                    .Include(p => p.Variants) //include the variants
+                    .ToListAsync() 
+            };
+
+            return response;
+        }
     }
 }

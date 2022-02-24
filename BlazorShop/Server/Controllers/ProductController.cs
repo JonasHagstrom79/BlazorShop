@@ -38,5 +38,13 @@ namespace BlazorShop.Server.Controllers
             var result = await _productService.GetProductsByCategoryAsync(categoryUrl);
             return Ok(result);
         }
+
+        [HttpGet("search/{searchText}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProductsAsync(string searchText) //from search
+        {
+            //Get one product from server
+            var result = await _productService.SearchProductsAsync(searchText);
+            return Ok(result);
+        }
     }
 }
