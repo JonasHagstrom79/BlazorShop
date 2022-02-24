@@ -13,6 +13,7 @@ namespace BlazorShop.Server.Controllers
         {            
             _productService = productService;
         }
+
         [HttpGet]        
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts() //adds from swagger
         {
@@ -23,11 +24,19 @@ namespace BlazorShop.Server.Controllers
         }
 
         [HttpGet("{productId}")]//the [Route] added to the [HtttpGet]       
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProduct(int productId) //adds from swagger
+        public async Task<ActionResult<ServiceResponse<Product>>> GetProduct(int productId) //adds from swagger, found one error here, not a list
         {
             //Get one product from server
             var result = await _productService.GetProductAsync(productId);
             return Ok(result);            
+        }
+
+        [HttpGet("category/{categoryUrl}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategoryAsync(string categoryUrl) //adds from swagger
+        {
+            //Get one product from server
+            var result = await _productService.GetProductsByCategoryAsync(categoryUrl);
+            return Ok(result);
         }
     }
 }
