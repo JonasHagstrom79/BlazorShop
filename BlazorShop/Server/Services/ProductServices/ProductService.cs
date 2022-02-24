@@ -60,6 +60,44 @@
         }
 
         /// <summary>
+        /// Get every word from a seach
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<ServiceResponse<List<string>>> GetProductSearchSuggestionsAsync(string searchText)
+        {
+            var products = await FindProductsBySearchTextAsync(searchText);
+
+            List<string> result = new List<string>();
+            //For every product we find here we heck if the title contains our search term
+            foreach (var product in products)
+            {
+                if(product.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)) //same as ToLower() comparison
+                {
+                    result.Add(product.Title); //Got the title
+                }
+                if (product.Description != null)
+                {
+                    var punctioation = product.Description.Where(char.IsPunctuation)
+                        .Distinct().ToArray();
+                    var words = product.Description.Split() //With the punctiation we get all the words of the description
+                        .Select(s => s.Trim(punctioation)); //select everything and remove the punctioation
+
+                    foreach (var word in words)
+                    {
+                        if (word.Contains(searchText, StringComparison.OrdinalIgnoreCase) //if any words contains the searchtext, add to result
+                            && !result.Contains(word))
+                        {
+                            result.Add(word);
+                        }
+                    }
+                }
+            }
+            return new ServiceResponse<List<string>> { Data = result };
+        }
+
+        /// <summary>
         /// Search title and description of Product
         /// </summary>
         /// <param name="searchText"></param>
@@ -69,15 +107,20 @@
             //title and description search
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products
-                    .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
-                    ||
-                    p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
-                    .Include(p => p.Variants) //include the variants
-                    .ToListAsync() 
+                Data = await FindProductsBySearchTextAsync(searchText)
             };
 
             return response;
+        }
+
+        private async Task<List<Product>> FindProductsBySearchTextAsync(string searchText)
+        {
+            return await _context.Products
+                                .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
+                                ||
+                                p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
+                                .Include(p => p.Variants) //include the variants
+                                .ToListAsync();
         }
     }
 }
