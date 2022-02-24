@@ -10,6 +10,7 @@
             _http = http;
         }
         public List<Product> Products { get; set; }
+        public string Message { get; set; } = "Loading products...";
 
         public event Action ProductsChanged; //Event lisener
 
@@ -41,6 +42,26 @@
             }
             //Invoke event at the end, need to be or the site will crash
             ProductsChanged.Invoke();//Go to Index.razor
-        }        
+        }
+
+        public async Task<List<string>> GetProductSearchSuggestions(string searchText)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<string>>>($"api/product/seachsuggestions/{searchText}");
+            return result.Data;
+        }
+
+        public async Task SearchProducts(string searchText)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/seach/{searchText}");
+            if (result != null && result.Data != null)
+            {
+                Products = result.Data;
+            }
+            if (Products.Count == 0)
+            {
+                Message = "No products found.";
+            }
+            ProductsChanged?.Invoke(); //invokes the event handeler
+        }
     }
 }
