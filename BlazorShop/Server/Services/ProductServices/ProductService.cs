@@ -18,7 +18,10 @@
         public async Task<ServiceResponse<Product>> GetProductAsync(int productID)
         {
             var response = new ServiceResponse<Product>();
-            var product = await _context.Products.FindAsync(productID);
+            var product = await _context.Products
+                .Include(p => p.Variants) //For every product we want to add the varinats, if not we will have an empty list
+                .ThenInclude(v => v.ProductType) //for the variants we want to include the product type
+                .FirstOrDefaultAsync(p => p.Id == productID);  //to find the proper single product
             if (product == null) 
             {
                 response.Success = false;
@@ -39,7 +42,7 @@
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products.ToListAsync()
+                Data = await _context.Products.Include(p => p.Variants).ToListAsync() //We dont need the product types here because we wont show them on the client
             };
             return response;
         }
@@ -50,6 +53,7 @@
             {
                 Data = await _context.Products
                     .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))//compare url and put them into a list
+                    .Include(p => p.Variants) //Adds the variants
                     .ToListAsync()
             };
             return response;
