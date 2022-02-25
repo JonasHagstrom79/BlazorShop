@@ -20,6 +20,7 @@ namespace BlazorShop.Shared
         //public decimal Price { get; set; }//price
         public Category? Category { get; set; } //Link to category
         public int CategoryId { get; set; } //FKey
+        public bool Featured { get; set; } = false; //for the feature functionality
         public List<ProductVariant> Variants { get; set; } = new List<ProductVariant>(); //Different varriant of the same object, paperback, ebook etc
         #endregion
     }

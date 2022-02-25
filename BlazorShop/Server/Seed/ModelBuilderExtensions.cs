@@ -7,7 +7,7 @@
             //for the key
             modelBuilder.Entity<ProductVariant>()
                 .HasKey(p => new { p.ProductId, p.ProductTypeId } );//Composite primary key
-            
+            #region Product Type
             modelBuilder.Entity<ProductType>().HasData(
                     new ProductType { Id = 1, Name = "Default" },
                     new ProductType { Id = 2, Name = "Paperback" },
@@ -20,6 +20,7 @@
                     new ProductType { Id = 9, Name = "PlayStation" },
                     new ProductType { Id = 10, Name = "Xbox" }
                 );
+            #endregion
 
             #region Category
             modelBuilder.Entity<Category>().HasData(
@@ -43,6 +44,7 @@
                 }
                 );
             #endregion
+
             #region Product
             modelBuilder.Entity<Product>().HasData(
                 new Product
@@ -51,7 +53,8 @@
                     Title = "The Hitchhiker's Guide to the Galaxy",
                     Description = "The Hitchhiker's Guide to the Galaxy[note 1] (sometimes referred to as HG2G,[1] HHGTTG,[2] H2G2,[3] or tHGttG) is a comedy science fiction franchise created by Douglas Adams. Originally a 1978 radio comedy broadcast on BBC Radio 4, it was later adapted to other formats, including stage shows, novels, comic books, a 1981 TV series, a 1984 text-based computer game, and 2005 feature film. ",
                     ImageUrl = "https://upload.wikimedia.org/wikipedia/en/b/bd/H2G2_UK_front_cover.jpg",
-                    CategoryId = 1                    
+                    CategoryId = 1,
+                    Featured = true
                 },
                 new Product
                 {
@@ -76,6 +79,7 @@
                         Title = "The Matrix",
                         Description = "The Matrix is a 1999 science fiction action film written and directed by the Wachowskis, and produced by Joel Silver. Starring Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving, and Joe Pantoliano, and as the first installment in the Matrix franchise, it depicts a dystopian future in which humanity is unknowingly trapped inside a simulated reality, the Matrix, which intelligent machines have created to distract humans while using their bodies as an energy source. When computer programmer Thomas Anderson, under the hacker alias \"Neo\", uncovers the truth, he \"is drawn into a rebellion against the machines\" along with other people who have been freed from the Matrix.",
                         ImageUrl = "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg",
+                        Featured = true
                     },
                     new Product
                     {
@@ -109,7 +113,7 @@
                         CategoryId = 3,
                         Title = "Diablo II",
                         Description = "Diablo II is an action role-playing hack-and-slash computer video game developed by Blizzard North and published by Blizzard Entertainment in 2000 for Microsoft Windows, Classic Mac OS, and macOS.",
-                        ImageUrl = "https://upload.wikimedia.org/wikipedia/en/d/d5/Diablo_II_Coverart.png",
+                        ImageUrl = "https://upload.wikimedia.org/wikipedia/en/d/d5/Diablo_II_Coverart.png",                        
                     },
                     new Product
                     {
@@ -118,6 +122,7 @@
                         Title = "Day of the Tentacle",
                         Description = "Day of the Tentacle, also known as Maniac Mansion II: Day of the Tentacle, is a 1993 graphic adventure game developed and published by LucasArts. It is the sequel to the 1987 game Maniac Mansion.",
                         ImageUrl = "https://upload.wikimedia.org/wikipedia/en/7/79/Day_of_the_Tentacle_artwork.jpg",
+                        Featured = true
                     },
                     new Product
                     {
