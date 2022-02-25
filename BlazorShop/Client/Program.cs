@@ -1,8 +1,8 @@
 global using BlazorShop.Shared;
 global using System.Net.Http.Json;
 global using BlazorShop.Client.Services.ProductService;
-
 global using BlazorShop.Client.Services.CategorySerrvice;
+global using BlazorShop.Shared.Dto;
 
 using BlazorShop.Client;
 using Microsoft.AspNetCore.Components.Web;

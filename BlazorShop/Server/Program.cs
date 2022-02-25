@@ -3,6 +3,7 @@ global using Microsoft.EntityFrameworkCore;
 global using BlazorShop.Server.Data;
 global using BlazorShop.Server.Services.ProductServices;
 global using BlazorShop.Server.Services.CategoryServices;
+global using BlazorShop.Shared.Dto;
 using Microsoft.AspNetCore.ResponseCompression;
 
 
