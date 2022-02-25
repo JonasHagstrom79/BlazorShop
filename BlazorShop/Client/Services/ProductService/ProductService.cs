@@ -14,7 +14,12 @@
 
         public event Action ProductsChanged; //Event lisener
 
-        public event Action ProductsChanged;
+        public Task<ServiceResponse<Product>> GetProduct(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
 
         /// <summary>
