@@ -52,7 +52,7 @@
 
         public async Task SearchProducts(string searchText)
         {
-            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/seach/{searchText}");
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{searchText}");
             if (result != null && result.Data != null)
             {
                 Products = result.Data;

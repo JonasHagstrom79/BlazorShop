@@ -1,4 +1,5 @@
 ﻿@page "/"
+@page "/search/{searchText}"
 @page "/{categoryUrl}"
 @inject IProductService ProductService
 
@@ -10,10 +11,20 @@
     [Parameter]
     public string? CategoryUrl { get; set; } = null;//Här!?
 
+    [Parameter]
+    public string? SearchText { get; set; } = null;//Här!?
+
     //Add lifecyckle method
     protected override async Task OnParametersSetAsync()
     {
-        await ProductService.GetProducts(CategoryUrl); //need to inject the productservce
+        if (SearchText != null) //the search
+        {
+            await ProductService.SearchProducts(SearchText);
+        }
+        else
+        {
+            await ProductService.GetProducts(CategoryUrl); //need to inject the productservce
+        }
     }
     //Need to subscribe in the ProductList.razor(The component)
 }
