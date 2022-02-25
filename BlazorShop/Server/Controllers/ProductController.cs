@@ -13,6 +13,7 @@ namespace BlazorShop.Server.Controllers
         {            
             _productService = productService;
         }
+
         [HttpGet]        
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsAsync() //adds from swagger
         {
@@ -23,19 +24,49 @@ namespace BlazorShop.Server.Controllers
         }
 
         [HttpGet("{productId}")]//the [Route] added to the [HtttpGet]       
-        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductAsync(int productId) //adds from swagger
+
+        public async Task<ActionResult<ServiceResponse<Product>>> GetProduct(int productId) //adds from swagger, found one error here, not a list
+
         {
             //Get one product from server
             var result = await _productService.GetProductAsync(productId);
             return Ok(result);            
         }
 
-        [HttpGet("category/{categoryUrl}")] //To get the products from the server
+<
+        [HttpGet("category/{categoryUrl}")]
+
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategoryAsync(string categoryUrl) //adds from swagger
         {
             //Get one product from server
             var result = await _productService.GetProductsByCategoryAsync(categoryUrl);
             return Ok(result);
         }
+
+
+        [HttpGet("search/{searchText}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProductsAsync(string searchText) //from search
+        {
+            //Get one product from server
+            var result = await _productService.SearchProductsAsync(searchText);
+            return Ok(result);
+        }
+                  
+        [HttpGet("searchsuggestions/{searchText}")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductSearchSuggestionsAsync(string searchText) //from searchSuggestion
+        {
+            //Get one product from server
+            var result = await _productService.GetProductSearchSuggestionsAsync(searchText);
+            return Ok(result);
+        }
+
+        [HttpGet("featured")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturdeProductsAsync() //from searchSuggestion
+        {
+            //Get featured products from server
+            var result = await _productService.GetFeaturdeProductsAsync();
+            return Ok(result);
+        }
+
     }
 }

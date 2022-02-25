@@ -10,6 +10,9 @@
             _http = http;
         }
         public List<Product> Products { get; set; }
+        public string Message { get; set; } = "Loading products...";
+
+        public event Action ProductsChanged; //Event lisener
 
         public event Action ProductsChanged;
 
@@ -30,17 +33,41 @@
         /// Get the products from the Database
         /// </summary>
         /// <returns>List Products</returns>
-        public async Task GetProductsAsync(string? categoryUrl = null) //for the event listener
+
+        public async Task GetProducts(string? categoryUrl = null)
         {
-            var result = categoryUrl == null ?
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product") : //If the call is null we use this line
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}"); //If the call is not null
+            var result = categoryUrl == null ? //use ternery operator 
+                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured") : //if null use this call(IproductService)
+                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}"); //if not null use this(IproductService)
+
             if (result != null && result.Data != null)
             {
                 Products = result.Data;
             }
-            //Invoke the event at the end
-            ProductsChanged.Invoke(); //Everythin subscribed to the event knows that smthing has changed
-        }        
+
+            //Invoke event at the end, need to be or the site will crash
+            ProductsChanged.Invoke();//Go to Index.razor
+        }
+
+        public async Task<List<string>> GetProductSearchSuggestions(string searchText)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<string>>>($"api/product/searchsuggestions/{searchText}");
+            return result.Data; //
+        }
+
+        public async Task SearchProducts(string searchText)
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{searchText}");
+            if (result != null && result.Data != null)
+            {
+                Products = result.Data;
+            }
+            if (Products.Count == 0)
+            {
+                Message = "No products found.";
+            }
+            ProductsChanged?.Invoke(); //invokes the event handeler
+        }
+
     }
 }

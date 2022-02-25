@@ -8,9 +8,9 @@ namespace BlazorShop.Shared
 {
     public class ProductType
     {
-        #region Properties
-        public int Id { get; set; }
+
+        public int Id { get; set; } 
         public string Name { get; set; } = string.Empty;
-        #endregion
+
     }
 }

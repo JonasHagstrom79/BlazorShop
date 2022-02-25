@@ -1,0 +1,60 @@
+﻿@inject NavigationManager NavigationManager
+@inject IProductService ProductService
+
+<div class="input-group"> @*input group for a sweet design*@
+    <input  @bind-value="searchText"
+            @bind-value:event="oninput"
+            type="search"
+            list="products"
+            @onkeyup="HandleSearch"
+            class="form-control"
+            placeholder="Search..."
+            @ref="searchInput" />
+    <datalist id="products"> @*same as list=products*@
+            @foreach (var suggestion in suggestions)
+            {
+                <option>@suggestion</option>           
+            }
+    </datalist>
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="SearchProducts">
+            <span class="oi oi-magnifying-glass"></span> @*using an icon*@
+        </button>
+    </div>
+</div>
+
+@code {
+
+    private string searchText = string.Empty;
+    private List<string> suggestions = new List<string>();
+    //sets the focus in the input field
+    protected ElementReference searchInput;
+
+    //Implement the focus, the third lifecycle metod in after render
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await searchInput.FocusAsync();
+        }
+    }
+
+    //using navigation manager, search in url
+    public void SearchProducts()
+    {
+        NavigationManager.NavigateTo($"search/{searchText}");
+    }
+
+    //when the user clicks on the search button
+    public async Task HandleSearch(KeyboardEventArgs args)
+    {
+        if (args.Key == null || args.Key.Equals("Enter")) //user hits enter
+        {
+            SearchProducts();
+        }
+        else if(searchText.Length > 1)//if user input 2 chars we start the call for suggestions
+        {
+            suggestions = await ProductService.GetProductSearchSuggestions(searchText);
+        }
+    }
+}

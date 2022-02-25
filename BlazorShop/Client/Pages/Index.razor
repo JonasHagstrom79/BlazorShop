@@ -1,18 +1,39 @@
 ﻿@page "/"
+
+@page "/search/{searchText}"
 @page "/{categoryUrl}"
-@inject IProductService productService
+@inject IProductService ProductService
 
 <PageTitle>My Shop</PageTitle>
 
-<ProductList />
+@if (SearchText == null && CategoryUrl == null)
+{
+    <FeaturedProducts />
+}
+else
+{
+    <ProductList />
+}
 
-@code {
-    //Add lifecycle method here    
+@code{
     [Parameter]
-    public string? CategoryUrl { get; set; } = null;
+    public string? CategoryUrl { get; set; } = null;//Här!?
 
+    [Parameter]
+    public string? SearchText { get; set; } = null;//Här!?
+
+    //Add lifecyckle method
     protected override async Task OnParametersSetAsync()
     {
-        await productService.GetProductsAsync(CategoryUrl); //in the productList.razor coponent
+        if (SearchText != null) //the search
+        {
+            await ProductService.SearchProducts(SearchText);
+        }
+        else
+        {
+            await ProductService.GetProducts(CategoryUrl); //need to inject the productservce
+        }
     }
+    //Need to subscribe in the ProductList.razor(The component)
 }
+

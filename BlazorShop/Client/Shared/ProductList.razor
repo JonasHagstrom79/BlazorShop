@@ -3,11 +3,10 @@
 
 @if (ProductService.Products == null || ProductService.Products.Count == 0)
 {
-   <span>Loading Products..</span> 
+   <span>@ProductService.Message</span> 
 }
 else
-{
-    <h3>ProductList</h3>
+{    
     <ul class="list-unstyled">
         @foreach (var product in ProductService.Products)
         {
@@ -22,7 +21,9 @@ else
                         <h4 class="mb-0">@product.Title</h4>
                     </a>
                     <p>@product.Description</p>
-                    <h5 class="price">€@*@product.Price*@</h5>
+
+                    <h5 class="price">@GetPriceText(product)</h5>
+
                 </div>
             </li>
         }
@@ -30,14 +31,33 @@ else
 }
 
 @code {
-    protected override void OnInitialized() 
+
+    protected override void OnInitialized() //Not async
     {
-        //Subscribed to the event
-        ProductService.ProductsChanged += StateHasChanged; //Keeps track that smthing has been changed
+        //Subscribe to the event        
+        ProductService.ProductsChanged += StateHasChanged;
     }
 
     public void Dispose()
     {
-        ProductService.ProductsChanged -= StateHasChanged; //line 2 to be able to unsubscribe
+        //Need to be able to unsubscribe aswell @line 2
+        ProductService.ProductsChanged -= StateHasChanged;
+    }
+    //Function for prize
+    private string GetPriceText(Product product)
+    {
+        var variants = product.Variants;
+        if (variants.Count == 0)
+        {
+            return string.Empty;
+        }
+        else if(variants.Count == 1)
+        {
+            return $"€{variants[0].Price}"; //returns the price of the variant
+        }
+        //minimum price of every variant
+        decimal minPrice = variants.Min(v => v.Price);
+        return $"Starting at €{minPrice}";
+
     }
 }

@@ -10,14 +10,21 @@ namespace BlazorShop.Shared
 {
     public class ProductVariant
     {
-        [JsonIgnore]//to get rid of circular reference(Get a Json that refers to another jason etc..)
+
+        //composide primary key
+        [JsonIgnore] //To breake the circular reference between product(list in a list in a list etc)
+
         public Product Product { get; set; }
         public int ProductId { get; set; }
         public ProductType ProductType { get; set; }
         public int ProductTypeId { get; set; }
-        [Column(TypeName="decimal(18,2")] //define the digits for the model
+
+        //set the price here instead
+        [Column(TypeName="decimal(18,2)")]
         public decimal Price { get; set; }
-        [Column(TypeName = "decimal(18,2")] //define the digits for the model
+        //add the original prize
+        [Column(TypeName = "decimal(18,2)")]
+
         public decimal OriginalPrice { get; set; }
     }
 }
