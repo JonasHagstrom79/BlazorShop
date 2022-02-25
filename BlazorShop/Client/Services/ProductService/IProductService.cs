@@ -1,6 +1,7 @@
 ﻿namespace BlazorShop.Client.Services.ProductService
 {
     public interface IProductService
+
     {
         event Action ProductsChanged; //add event listerner
         //The productlist itself
@@ -10,5 +11,6 @@
         Task<ServiceResponse<Product>> GetProduct(int productId);
         Task SearchProducts(string searchText); //NOT async in name
         Task<List<string>> GetProductSearchSuggestions(string searchText); //NOT async in name
+
     }
 }

@@ -64,12 +64,15 @@
             var response = new ServiceResponse<List<Product>>
             {
                 Data = await _context.Products
+
                     .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))//compare url and put them into a list
                     .Include(p => p.Variants) //Adds the variants
+
                     .ToListAsync()
             };
             return response;
         }
+
 
         /// <summary>
         /// Get every word from a seach
@@ -134,5 +137,6 @@
                                 .Include(p => p.Variants) //include the variants
                                 .ToListAsync();
         }
+
     }
 }

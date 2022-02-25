@@ -14,6 +14,8 @@
 
         public event Action ProductsChanged; //Event lisener
 
+        public event Action ProductsChanged;
+
 
         /// <summary>
         /// Gets a Product on the client
@@ -21,7 +23,7 @@
         /// <param name="productId"></param>
         /// <returns>Product</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<ServiceResponse<Product>> GetProduct(int productId)
+        public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}"); //add a parameter to the string
             return result;
@@ -31,15 +33,18 @@
         /// Get the products from the Database
         /// </summary>
         /// <returns>List Products</returns>
+
         public async Task GetProducts(string? categoryUrl = null)
         {
             var result = categoryUrl == null ? //use ternery operator 
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured") : //if null use this call(IproductService)
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}"); //if not null use this(IproductService)
+
             if (result != null && result.Data != null)
             {
                 Products = result.Data;
             }
+
             //Invoke event at the end, need to be or the site will crash
             ProductsChanged.Invoke();//Go to Index.razor
         }
@@ -63,5 +68,6 @@
             }
             ProductsChanged?.Invoke(); //invokes the event handeler
         }
+
     }
 }
