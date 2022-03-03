@@ -47,5 +47,28 @@ namespace BlazorShop.Client.Services.CartService
                 await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>(); //var response is a http message so need to read from json
             return cartProducts.Data;
         }
+
+        public async Task RemoveProductFromCart(int productId, int productTypeId)
+        {
+            //get our cart
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+            //The item we want to remove, finds with productId && productTypeId
+            var cartItem = cart.Find(x => x.ProductId == productId
+                && x.ProductTypeId == productTypeId);
+            if (cartItem != null)
+            {
+                cart.Remove(cartItem);
+                //after we remove it we set the item again
+                await _localStorage.SetItemAsync("cart", cart);
+                OnChange.Invoke();//cart counter will re-render itself
+            }
+
+
+
+        }
     }
 }
