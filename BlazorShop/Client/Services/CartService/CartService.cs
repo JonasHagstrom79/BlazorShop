@@ -22,7 +22,17 @@ namespace BlazorShop.Client.Services.CartService
             {
                 cart = new List<CartItem>(); //initilaze
             }
-            cart.Add(cartItem);
+            //Checks if the same item already exists in the cart
+            var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
+                x.ProductTypeId == cartItem.ProductTypeId);
+            if (sameItem == null)
+            {
+                cart.Add(cartItem);
+            }
+            else
+            {
+                sameItem.Quantity += cartItem.Quantity;
+            }            
             //sets the cart
             await _localStorage.SetItemAsync("cart", cart);
             //to update the cart
