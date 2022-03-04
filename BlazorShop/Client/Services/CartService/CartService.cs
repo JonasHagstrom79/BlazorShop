@@ -76,9 +76,24 @@ namespace BlazorShop.Client.Services.CartService
                 await _localStorage.SetItemAsync("cart", cart);
                 OnChange.Invoke();//cart counter will re-render itself
             }
+        }
 
-
-
+        public async Task UpdateQuantity(CartProductResponseDto product)
+        {
+            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (cart == null)
+            {
+                return;
+            }
+            //The item we want to update, finds with productId && productTypeId
+            var cartItem = cart.Find(x => x.ProductId == product.ProductId
+                && x.ProductTypeId == product.ProductTypeId);
+            if (cartItem != null)
+            {
+                cartItem.Quantity = product.Quantity;
+                //after we update it we set the item again
+                await _localStorage.SetItemAsync("cart", cart);                
+            }
         }
     }
 }
