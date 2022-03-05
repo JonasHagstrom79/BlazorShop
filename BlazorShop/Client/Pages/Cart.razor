@@ -23,18 +23,22 @@ else
                         <a href="/product/@product.ProductId">@product.Title</a>
                     </h5>
                     <span>@product.ProductType</span>
+                    <input type="number" value="@product.Quantity"
+                        @onchange="@((ChangeEventArgs e) => UpdateQuantity(e, product))" @*send itemid into the method*@ @*only bind the event, not the value*@
+                        class="form-control input-quantity" @*first form control provided by bootstrap, then own css*@
+                        min="1"/>
                     <br/>
                     <button class="btn-delete" @onclick="@(() => 
                         RemoveProductFromCart(product.ProductId, product.ProductTypeId))">Delete
                     </button>
                 </div>
                 <div class="cart-product-price">
-                    €@product.Price
+                    €@(product.Price * product.Quantity)
                 </div>
             </div>
       }
       <div class="cart-product-price">
-        Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price) @*for each product we take the product price*@
+        Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price * product.Quantity) @*for each product we take the product price*@
       </div>
    </div> 
 }
@@ -67,5 +71,15 @@ else
         {
             cartProducts = await CartService.GetCartProducts();
         }
+    }
+
+    private async Task UpdateQuantity(ChangeEventArgs e, CartProductResponseDto product)
+    {
+        product.Quantity = int.Parse(e.Value.ToString());//sets the value from the input
+        if (product.Quantity < 1)
+        {
+            product.Quantity = 1;
+        }
+        await CartService.UpdateQuantity(product);
     }
 }
