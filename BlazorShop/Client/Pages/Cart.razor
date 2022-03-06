@@ -22,10 +22,10 @@ else
                     <h5>
                         <a href="/product/@product.ProductId">@product.Title</a>
                     </h5>
-                    <span>@product.ProductType</span>
+                    <span>@product.ProductType</span> @*send itemid into the method*@ @*only bind the event, not the value*@ 
                     <input type="number" value="@product.Quantity"
-                        @onchange="@((ChangeEventArgs e) => UpdateQuantity(e, product))" @*send itemid into the method*@ @*only bind the event, not the value*@
-                        class="form-control input-quantity" @*first form control provided by bootstrap, then own css*@
+                        @onchange="@((ChangeEventArgs e) => UpdateQuantity(e, product))" 
+                        class="form-control input-quantity" 
                         min="1"/>
                     <br/>
                     <button class="btn-delete" @onclick="@(() => 
