@@ -1,4 +1,6 @@
-﻿namespace BlazorShop.Server.Services.AuthService
+﻿using System.Security.Cryptography;
+
+namespace BlazorShop.Server.Services.AuthService
 {
     public class AuthService : IAuthService
     {
@@ -9,9 +11,27 @@
             _context = context;
         }
 
-        public Task<ServiceResponse<int>> Register(User user, string password)
+        public async Task<ServiceResponse<int>> Register(User user, string password)
         {
-            throw new NotImplementedException();
+            //check if the user already exists
+            if (await UserExists(user.Email))
+            {
+                return new ServiceResponse<int> 
+                { 
+                    Success = false, 
+                    Message = "User already exists" 
+                };
+            }
+            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            //now we add the new user
+            _context.Users.Add(user);
+            //we did a change to the database tabel, so neet to call SaveChanges()
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<int> { Data = user.Id };
         }
 
         public async Task<bool> UserExists(string email)
@@ -22,6 +42,17 @@
                 return true;
             }
             return false;
+        }
+
+        //To create the password hash
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt) 
+        {
+            //uses a cryptography algorithm
+            using(var hmac = new HMACSHA512()) 
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }
