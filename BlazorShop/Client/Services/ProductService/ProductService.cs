@@ -23,7 +23,7 @@
         /// <param name="productId"></param>
         /// <returns>Product</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
+        public async Task<ServiceResponse<Product>> GetProduct(int productId)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}"); //add a parameter to the string
             return result;

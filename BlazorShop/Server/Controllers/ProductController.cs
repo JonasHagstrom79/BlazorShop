@@ -33,9 +33,7 @@ namespace BlazorShop.Server.Controllers
             return Ok(result);            
         }
 
-<
         [HttpGet("category/{categoryUrl}")]
-
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProductsByCategoryAsync(string categoryUrl) //adds from swagger
         {
             //Get one product from server
