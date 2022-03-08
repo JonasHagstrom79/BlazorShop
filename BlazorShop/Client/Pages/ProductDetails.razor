@@ -15,6 +15,7 @@ else
         <div class="media-body">
             <h2 class="mb-0">@product.Title</h2>
             <p>@product.Description</p>
+
             @if (product.Variants != null && product.Variants.Count > 1)
             {
                 <div class="mb-3">
@@ -41,6 +42,7 @@ else
             <button class="btn btn-primary" @onclick="AddToCart"> @*we call the AddToCart onClick*@ 
                 <i class="oi oi-cart"></i>&nbsp;&nbsp;&nbsp;Add to Cart @*icon and add some space*@
             </button>
+
         </div>
     </div>
 }
@@ -59,7 +61,7 @@ else
     {
         Message = "Loading Product..";
         //where the product id ecuals the given id
-        var result = await ProductService.GetProduct(Id);
+        var result = await ProductService.GetProductAsync(Id);
         if (!result.Success)
         {
             Message = result.Message;
