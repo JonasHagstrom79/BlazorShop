@@ -16,7 +16,7 @@ namespace BlazorShop.Server.Services.AuthService
             //check if the user already exists
             if (await UserExists(user.Email))
             {
-                return new ServiceResponse<int> 
+                return new ServiceResponse<int> //
                 { 
                     Success = false, 
                     Message = "User already exists" 
