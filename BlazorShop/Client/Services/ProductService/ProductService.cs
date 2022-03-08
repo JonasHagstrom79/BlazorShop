@@ -11,9 +11,13 @@
         }
         public List<Product> Products { get; set; }
         public string Message { get; set; } = "Loading products...";
+        public int CurrentPage { get; set; } = 1;
+        public int PageCount { get; set; } = 0;
+        public string LastSearchText { get; set; } = string.Empty;
 
         public event Action ProductsChanged; //Event lisener
 
+<<<<<<< HEAD
         public Task<ServiceResponse<Product>> GetProduct(int productId)
         {
             throw new NotImplementedException();
@@ -22,6 +26,8 @@
 
 
 
+=======
+>>>>>>> 863a566082ba9301bbe9ec5cf98fa91aa22cfc9a
         /// <summary>
         /// Gets a Product on the client
         /// </summary>
@@ -50,6 +56,10 @@
                 Products = result.Data;
             }
 
+            CurrentPage = 1;
+            PageCount = 0;
+            if(Products.Count == 0) { Message = "No products found"; }
+
             //Invoke event at the end, need to be or the site will crash
             ProductsChanged.Invoke();//Go to Index.razor
         }
@@ -60,12 +70,15 @@
             return result.Data; //
         }
 
-        public async Task SearchProducts(string searchText)
+        public async Task SearchProducts(string searchText, int page)
         {
-            var result = await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{searchText}");
+            LastSearchText = searchText;
+            var result = await _http.GetFromJsonAsync<ServiceResponse<ProductSearchResultDto>>($"api/product/search/{searchText}/{page}");
             if (result != null && result.Data != null)
             {
-                Products = result.Data;
+                Products = result.Data.Products;
+                CurrentPage = result.Data.CurrentPage;
+                PageCount = result.Data.Pages;
             }
             if (Products.Count == 0)
             {

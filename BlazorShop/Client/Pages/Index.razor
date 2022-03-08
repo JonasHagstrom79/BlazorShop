@@ -1,6 +1,6 @@
 ﻿@page "/"
+@page "/search/{searchText}/{page:int}"
 
-@page "/search/{searchText}"
 @page "/{categoryUrl}"
 @inject IProductService ProductService
 
@@ -17,17 +17,19 @@ else
 
 @code{
     [Parameter]
-    public string? CategoryUrl { get; set; } = null;//Här!?
+    public string? CategoryUrl { get; set; } = null;
 
     [Parameter]
-    public string? SearchText { get; set; } = null;//Här!?
+    public string? SearchText { get; set; } = null;
+    [Parameter]
+    public int Page { get; set; } = 1;//Här!?
 
     //Add lifecyckle method
     protected override async Task OnParametersSetAsync()
     {
         if (SearchText != null) //the search
         {
-            await ProductService.SearchProducts(SearchText);
+            await ProductService.SearchProducts(SearchText, Page);
         }
         else
         {

@@ -117,12 +117,30 @@
         /// </summary>
         /// <param name="searchText"></param>
         /// <returns></returns>
-        public async Task<ServiceResponse<List<Product>>> SearchProductsAsync(string searchText) //Add to controller always!
+        public async Task<ServiceResponse<ProductSearchResultDto>> SearchProductsAsync(string searchText, int page) //Add to controller always!
         {
+            //The number of results per page
+            var pageResults = 2f;
+            var pageCount = Math.Ceiling((await FindProductsBySearchTextAsync(searchText)).Count / pageResults);
+
+            var products = await _context.Products
+                                .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
+                                ||
+                                p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
+                                .Include(p => p.Variants)
+                                .Skip((page - 1) * (int)pageResults) //For each page we skip two products
+                                .Take((int)pageResults) //from the result we take the next two
+                                .ToListAsync();
+
             //title and description search
-            var response = new ServiceResponse<List<Product>>
+            var response = new ServiceResponse<ProductSearchResultDto>
             {
-                Data = await FindProductsBySearchTextAsync(searchText)
+                Data = new ProductSearchResultDto
+                {
+                    Products = products,
+                    CurrentPage = page,
+                    Pages = (int)pageCount
+                }
             };
 
             return response;
