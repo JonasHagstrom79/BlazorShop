@@ -30,10 +30,14 @@ else
     </ul>
     for (var i = 1; i < ProductService.PageCount; i++)
     {
-        <a class="btn@(i <= ProductService.CurrentPage ? "btn-info"
+        @*<a class="btn@(i <= ProductService.CurrentPage ? "btn-info"
                         : "btn-outline-info")
                         page-selection"
                         href="/search/@ProductService.LastSearchText/@i">@i</a> @* @i=for the page we wanna select with the button*@
+        <a class="btn
+                 @(i == ProductService.CurrentPage ? "btn-info" : "btn-outline-info")
+                 page-selection"
+                 href="/search/@ProductService.LastSearchText/@i">@i</a>
     }
 }
 
