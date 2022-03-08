@@ -8,5 +8,6 @@
         Task<ServiceResponse<ProductSearchResultDto>> SearchProductsAsync(string searchText, int page);
         Task<ServiceResponse<List<string>>> GetProductSearchSuggestionsAsync(string searchText);
         Task<ServiceResponse<List<Product>>> GetFeaturdeProductsAsync();
+
     }
 }
