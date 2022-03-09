@@ -1,14 +1,19 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace BlazorShop.Server.Services.AuthService
 {
     public class AuthService : IAuthService
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(DataContext context)
+        public AuthService(DataContext context, IConfiguration configuration)//also inject IConfiguration for the token-secret
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse<string>> Login(string email, string password)
@@ -29,7 +34,7 @@ namespace BlazorShop.Server.Services.AuthService
             }    
             else
             {
-                response.Data = "token"; //the token from secrets.json
+                response.Data = CreateToken(user); //the token from secrets.json
             }                              
             return response;
         }
@@ -89,6 +94,28 @@ namespace BlazorShop.Server.Services.AuthService
                 var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passwordHash); //SequenceEqual instead of a for loop
             }
+        }
+
+        private string CreateToken(User user) 
+        {
+            List<Claim> claims = new List<Claim> //Store in the Json webtoken
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            //Use key to create a new instance of sign in credentials
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            //create the token
+            var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(1),//Valid one day
+                    signingCredentials: creds);
+            //Our Json webtoken
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
         }
     }
 }
