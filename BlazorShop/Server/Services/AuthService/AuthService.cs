@@ -31,7 +31,11 @@ namespace BlazorShop.Server.Services.AuthService
             //we did a change to the database tabel, so neet to call SaveChanges()
             await _context.SaveChangesAsync();
 
-            return new ServiceResponse<int> { Data = user.Id };
+            return new ServiceResponse<int> 
+            { 
+                Data = user.Id, 
+                Message ="Registration successful" 
+            };
         }
 
         public async Task<bool> UserExists(string email)
