@@ -11,6 +11,15 @@ namespace BlazorShop.Server.Services.AuthService
             _context = context;
         }
 
+        public async Task<ServiceResponse<string>> Login(string email, string password)
+        {
+            var response = new ServiceResponse<string> 
+            {
+                Data = "token" //the token from secrets.json
+            };
+            return response;
+        }
+
         public async Task<ServiceResponse<int>> Register(User user, string password)
         {
             //check if the user already exists
