@@ -4,6 +4,7 @@ global using BlazorShop.Client.Services.ProductService;
 global using BlazorShop.Client.Services.CategorySerrvice;
 global using BlazorShop.Client.Services.AuthService;
 global using BlazorShop.Shared.Dto;
+global using Microsoft.AspNetCore.Components.Authorization;
 using BlazorShop.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -20,5 +21,8 @@ builder.Services.AddScoped<IProductService, ProductService>(); //for dependencyi
 builder.Services.AddScoped<ICategoryService, CategoryService>(); //as above
 builder.Services.AddScoped<ICartService, CartService>(); //As above
 builder.Services.AddScoped<IAuthService, AuthService>(); //As above
+builder.Services.AddOptions(); //for global using Microsoft.AspNetCore.Components.Authorization;
+builder.Services.AddAuthorizationCore(); //for global using Microsoft.AspNetCore.Components.Authorization;
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>(); //for global using Microsoft.AspNetCore.Components.Authorization;
 
 await builder.Build().RunAsync();
