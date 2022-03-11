@@ -1,0 +1,10 @@
+﻿@page "/profile"
+
+<AuthorizeView>
+    <h3>Hi! You're logged in with <i>@context.User.Identity.Name</i>.</h3>
+</AuthorizeView>
+
+@code {
+    //sets the route at line 1
+    //Only authenticated user shoud see this
+}
