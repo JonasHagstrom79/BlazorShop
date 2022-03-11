@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@using Microsoft.AspNetCore.WebUtilities
 @inject IAuthService AuthService
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
@@ -32,6 +33,16 @@
     private UserLogin user = new UserLogin();
 
     private string errorMessage = string.Empty;
+    private string returnUrl = string.Empty; //to remember login
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri); //get the absolut route to the url that is set in the browser
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var url))
+        {
+            returnUrl = url;
+        }
+    }
 
     private async Task HandleLogin()
     {
@@ -43,7 +54,7 @@
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
             //Navigatemanager navigates to the homepage
-            NavigationManager.NavigateTo("");//HÄR kanske man kan göra med B-arbetet?
+            NavigationManager.NavigateTo(returnUrl);//HÄR kanske man kan göra med B-arbetet?
         }
         else
         {
