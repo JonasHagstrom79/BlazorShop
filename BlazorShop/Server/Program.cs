@@ -7,7 +7,8 @@ global using BlazorShop.Server.Services.CartService;
 global using BlazorShop.Server.Services.AuthService;
 global using BlazorShop.Shared.Dto;
 using Microsoft.AspNetCore.ResponseCompression;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,19 @@ builder.Services.AddScoped<IProductService, ProductService>(); //for dependencyi
 builder.Services.AddScoped<ICategoryService, CategoryService>(); //As above, add global using att top
 builder.Services.AddScoped<ICartService, CartService>(); //..
 builder.Services.AddScoped<IAuthService, AuthService>(); //..
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl+. install the package
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = 
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    }); 
 
 var app = builder.Build();
 
@@ -52,6 +66,9 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+//order is important from line 32
+app.UseAuthentication(); //adds authen middleware
+app.UseAuthorization(); //adds author middleware
 
 
 app.MapRazorPages();
