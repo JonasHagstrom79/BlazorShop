@@ -4,9 +4,13 @@
     {
         public static void Seed(this ModelBuilder modelBuilder) 
         {
+            //for key to the cart
+            modelBuilder.Entity<CartItem>()
+                .HasKey(ci => new { ci.UserId, ci.ProductId, ci.ProductTypeId }); //ci = cartitem
             //for the key
             modelBuilder.Entity<ProductVariant>()
                 .HasKey(p => new { p.ProductId, p.ProductTypeId } );//Composite primary key
+
             #region Product Type
             modelBuilder.Entity<ProductType>().HasData(
                     new ProductType { Id = 1, Name = "Default" },
@@ -143,6 +147,7 @@
                 );
             #endregion
 
+            #region ProductVariant
             modelBuilder.Entity<ProductVariant>().HasData(
                 new ProductVariant
                 {
@@ -255,6 +260,7 @@
                     OriginalPrice = 399m
                 }
             );
+            #endregion
         }
     }
 }

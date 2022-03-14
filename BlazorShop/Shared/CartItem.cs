@@ -8,7 +8,9 @@ namespace BlazorShop.Shared
 {
     public class CartItem
     {
-        //gets te info from the server
+        //binds the cart to the user(fk)
+        public int UserId { get; set; }
+        //gets the info from the server
         public int ProductId { get; set; }
         public int ProductTypeId { get; set; }
         public int Quantity { get; set; } = 1;
