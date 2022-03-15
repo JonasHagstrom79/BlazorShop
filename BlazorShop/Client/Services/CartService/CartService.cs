@@ -6,17 +6,28 @@ namespace BlazorShop.Client.Services.CartService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _http;
+        private readonly AuthenticationStateProvider _authStateProvider;
 
-        public CartService(ILocalStorageService localStorage, HttpClient http) //we need the localstorage
+        public CartService(ILocalStorageService localStorage, HttpClient http, AuthenticationStateProvider authStateProvider) //we need the localstorage, and to know if the user is authenticated
         {
             _localStorage = localStorage;
             _http = http;
+            _authStateProvider = authStateProvider;
         }
         
         public event Action OnChange;
 
-        public async Task AddToCart(CartItem cartItem)
+        public async Task AddToCart(CartItem cartItem)//If the user is not auth=items from localstorage, If aut = get the items from the database
         {
+            if ((await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine("user is authenticated");
+            }
+            else
+            {
+                Console.WriteLine("user is NOT authenticated");
+            }
+
             var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
             if (cart == null) //if no cart creates a new
             {
