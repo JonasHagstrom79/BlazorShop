@@ -17,9 +17,10 @@ namespace BlazorShop.Client.Services.CartService
         
         public event Action OnChange;
 
+
         public async Task AddToCart(CartItem cartItem)//If the user is not auth=items from localstorage, If aut = get the items from the database
         {
-            if ((await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated)
+            if (await IsUserAuthenticated())
             {
                 Console.WriteLine("user is authenticated");
             }
@@ -43,12 +44,12 @@ namespace BlazorShop.Client.Services.CartService
             else
             {
                 sameItem.Quantity += cartItem.Quantity;
-            }            
+            }
             //sets the cart
             await _localStorage.SetItemAsync("cart", cart);
             //to update the cart
             OnChange.Invoke();
-        }
+        }        
 
         public async Task<List<CartItem>> GetCartItems()
         {
@@ -122,6 +123,11 @@ namespace BlazorShop.Client.Services.CartService
                 //after we update it we set the item again
                 await _localStorage.SetItemAsync("cart", cart);                
             }
+        }
+
+        private async Task<bool> IsUserAuthenticated()
+        {
+            return (await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
         }
     }
 }
