@@ -89,6 +89,23 @@ namespace BlazorShop.Client.Services.CartService
             }
         }
 
+        public async Task StoreCartItems(bool emtyLocalCart = false)
+        {
+            //get the local cart
+            var localCart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (localCart == null)
+            {
+                return;
+            }
+            //with that information we store all the cartitems in the database
+            await _http.PostAsJsonAsync("api/cart", localCart);
+            //if we want to empty the localcart
+            if (emtyLocalCart)
+            {
+                await _localStorage.RemoveItemAsync("cart");
+            }
+        }
+
         public async Task UpdateQuantity(CartProductResponseDto product)
         {
             var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BlazorShop.Server.Controllers
 {
@@ -22,5 +23,12 @@ namespace BlazorShop.Server.Controllers
             return Ok(result);
         }
 
+        [HttpPost] //default post of the controller
+        public async Task<ActionResult<ServiceResponse<List<CartProductResponseDto>>>> StoreCartItems(List<CartItem> cartItems)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _cartService.StoreCartItems(cartItems, userId);
+            return Ok(result);
+        }
     }
 }
