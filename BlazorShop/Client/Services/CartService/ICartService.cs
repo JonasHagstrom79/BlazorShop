@@ -10,5 +10,6 @@
         Task RemoveProductFromCart(int productId, int productTypeId);
         Task UpdateQuantity(CartProductResponseDto product);
         Task StoreCartItems(bool emtyLocalCart);
+        Task GetCartItemsCount();
     }
 }

@@ -48,17 +48,35 @@ namespace BlazorShop.Client.Services.CartService
             //sets the cart
             await _localStorage.SetItemAsync("cart", cart);
             //to update the cart
-            OnChange.Invoke();
+            await GetCartItemsCount();
         }        
 
         public async Task<List<CartItem>> GetCartItems()
         {
+            await GetCartItemsCount();
             var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
             if (cart == null) //if no cart creates a new
             {
                 cart = new List<CartItem>(); //initilaze
             }
             return cart;
+        }
+
+        public async Task GetCartItemsCount()
+        {
+            if (await IsUserAuthenticated())
+            {
+                var result = await _http.GetFromJsonAsync<ServiceResponse<int>> ("api/cart/count");
+                var count = result.Data;
+                //Set the count to the localstorage
+                await _localStorage.SetItemAsync<int>("cartItemsCount", count);
+            }
+            else
+            {
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                await _localStorage.SetItemAsync<int>("cartItemsCount", cart != null ? cart.Count : 0 ); //The value frpm localstorage, NOT the database. if not null sets to cart.count, otherwise to 0
+            }
+            OnChange.Invoke();
         }
 
         public async Task<List<CartProductResponseDto>> GetCartProducts() //Need to inject the Http-client in the constructor also
@@ -86,7 +104,7 @@ namespace BlazorShop.Client.Services.CartService
                 cart.Remove(cartItem);
                 //after we remove it we set the item again
                 await _localStorage.SetItemAsync("cart", cart);
-                OnChange.Invoke();//cart counter will re-render itself
+                await GetCartItemsCount();
             }
         }
 
