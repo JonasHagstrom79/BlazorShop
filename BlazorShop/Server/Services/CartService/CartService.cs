@@ -87,5 +87,25 @@ namespace BlazorShop.Server.Services.CartService
             return await GetCartProducts(await _context.CartItems //Gets the cart from the userId
                 .Where(ci => ci.UserId == GetUserId()).ToListAsync());
         }
+
+        public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
+        {
+            cartItem.UserId = GetUserId();
+
+            var sameItem = await _context.CartItems
+                .FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
+                ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == cartItem.UserId);
+            if (sameItem == null) 
+            {
+                _context.CartItems.Add(cartItem);
+            }
+            else
+            {
+                sameItem.Quantity += cartItem.Quantity;
+            }
+
+            await _context.SaveChangesAsync();
+            return new ServiceResponse<bool> { Data = true };
+        }
     }
 }

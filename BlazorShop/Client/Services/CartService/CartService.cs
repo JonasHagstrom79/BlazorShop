@@ -22,31 +22,29 @@ namespace BlazorShop.Client.Services.CartService
         {
             if (await IsUserAuthenticated())
             {
-                Console.WriteLine("user is authenticated");
+                await _http.PostAsJsonAsync("api/cart/add", cartItem); //postst with the "add" from AddToCart+add from server(Cartcontroller)
             }
             else
             {
-                Console.WriteLine("user is NOT authenticated");
-            }
-
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null) //if no cart creates a new
-            {
-                cart = new List<CartItem>(); //initilaze
-            }
-            //Checks if the same item already exists in the cart
-            var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
-                x.ProductTypeId == cartItem.ProductTypeId);
-            if (sameItem == null)
-            {
-                cart.Add(cartItem);
-            }
-            else
-            {
-                sameItem.Quantity += cartItem.Quantity;
-            }
-            //sets the cart
-            await _localStorage.SetItemAsync("cart", cart);
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null) //if no cart creates a new
+                {
+                    cart = new List<CartItem>(); //initilaze
+                }
+                //Checks if the same item already exists in the cart
+                var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
+                    x.ProductTypeId == cartItem.ProductTypeId);
+                if (sameItem == null)
+                {
+                    cart.Add(cartItem);
+                }
+                else
+                {
+                    sameItem.Quantity += cartItem.Quantity;
+                }
+                //sets the cart
+                await _localStorage.SetItemAsync("cart", cart);
+            }            
             //to update the cart
             await GetCartItemsCount();
         }        

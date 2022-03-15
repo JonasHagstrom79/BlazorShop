@@ -25,8 +25,7 @@ namespace BlazorShop.Server.Controllers
 
         [HttpPost] //default post of the controller
         public async Task<ActionResult<ServiceResponse<List<CartProductResponseDto>>>> StoreCartItems(List<CartItem> cartItems)
-        {
-            //var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));//acess the user
+        {            
             var result = await _cartService.StoreCartItems(cartItems);//send the userId to the service
             return Ok(result);
         }
@@ -41,6 +40,13 @@ namespace BlazorShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<CartProductResponseDto>>>>GetDbCartProducts()
         {
             var result = await _cartService.GetDbCartProducts();
+            return Ok(result);
+        }
+
+        [HttpPost("add")]
+        public async Task<ActionResult<ServiceResponse<bool>>>AddToCart(CartItem cartItems)
+        {            
+            var result = await _cartService.AddToCart(cartItems);
             return Ok(result);
         }
     }
