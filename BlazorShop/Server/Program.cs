@@ -41,7 +41,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl
             ValidateIssuer = false,
             ValidateAudience = false
         };
-    }); 
+    });
+builder.Services.AddHttpContextAccessor(); //to be able to access the user in the services
 
 var app = builder.Build();
 

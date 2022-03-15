@@ -1,14 +1,24 @@
-﻿namespace BlazorShop.Server.Services.CartService
+﻿using System.Security.Claims;
+
+namespace BlazorShop.Server.Services.CartService
 {
     public class CartService : ICartService
     {
         private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         //we nedd acess to the databas so add the ctor
-        public CartService(DataContext context)
+        public CartService(DataContext context, IHttpContextAccessor httpContextAccessor) //httpContextAccesssor to be able to access the user in the services
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        /// <summary>
+        /// Gets the userID from httpContextAccessor
+        /// </summary>
+        /// <returns>int</returns>
+        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         public async Task<ServiceResponse<List<CartProductResponseDto>>> GetCartProducts(List<CartItem> cartItems)
         {
@@ -55,15 +65,15 @@
             return result;
         }
 
-        public async Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems, int userId)
+        public async Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems)
         {
             //sets the userId
-            cartItems.ForEach(cartItem => cartItem.UserId = userId);
+            cartItems.ForEach(cartItem => cartItem.UserId = GetUserId());
             //AddRange allows to add more objects to the table
             _context.CartItems.AddRange(cartItems);
             await _context.SaveChangesAsync();
 
-            return await GetCartProducts(await _context.CartItems.Where(ci => ci.UserId == userId).ToListAsync());
+            return await GetCartProducts(await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync());
         }
     }
 }
