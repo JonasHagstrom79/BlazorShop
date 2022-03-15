@@ -50,18 +50,7 @@ namespace BlazorShop.Client.Services.CartService
             //to update the cart
             await GetCartItemsCount();
         }        
-
-        public async Task<List<CartItem>> GetCartItems()
-        {
-            await GetCartItemsCount();
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null) //if no cart creates a new
-            {
-                cart = new List<CartItem>(); //initilaze
-            }
-            return cart;
-        }
-
+              
         public async Task GetCartItemsCount()
         {
             if (await IsUserAuthenticated())
@@ -81,11 +70,25 @@ namespace BlazorShop.Client.Services.CartService
 
         public async Task<List<CartProductResponseDto>> GetCartProducts() //Need to inject the Http-client in the constructor also
         {
-            var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            var response = await _http.PostAsJsonAsync("api/cart/products", cartItems); //second is the obkject to send through the body
-            var cartProducts = 
-                await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>(); //var response is a http message so need to read from json
-            return cartProducts.Data;
+            //Check if the user is authenticated
+            if (await IsUserAuthenticated())
+            {
+                var response = await _http.GetFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>("api/cart"); //second is the obkject to send through the body
+                return response.Data;
+            }
+            else
+            {
+                var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cartItems == null)
+                {
+                    return new List<CartProductResponseDto>();
+                }
+                var response = await _http.PostAsJsonAsync("api/cart/products", cartItems); //second is the obkject to send through the body
+                var cartProducts =
+                    await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>(); //var response is a http message so need to read from json
+                return cartProducts.Data;
+            }
+            
         }
 
         public async Task RemoveProductFromCart(int productId, int productTypeId)
