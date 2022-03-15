@@ -55,6 +55,7 @@
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
             await CartService.StoreCartItems(true); //Empty the local storage
+            await CartService.GetCartItemsCount(); //Get the count for the count
             //Navigatemanager navigates to the homepage
             NavigationManager.NavigateTo(returnUrl);//HÄR kanske man kan göra med B-arbetet?
         }

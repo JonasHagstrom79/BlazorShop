@@ -1,6 +1,7 @@
 ﻿@inject ILocalStorageService LocalStorage
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject ICartService CartService
 <div class="dropdown">
     <button @onclick="ToggleUserMenu"
             @onfocusout="HideUserMenu"
@@ -25,7 +26,7 @@
 @code {
     private bool showUserMenu = false;    
     private string UserMenuCssClass => showUserMenu ? "show-menu" : null; // if showusermenu is true = "show-menu", else null
-    //private string abc = "/books";
+                                                                          //private string abc = "/books";
     private void ToggleUserMenu()
     {
         showUserMenu = !showUserMenu;
@@ -41,6 +42,8 @@
     {
         //remove the token from local storage
         await LocalStorage.RemoveItemAsync("authToken");
+        //Call the cirtitemscount method
+        await CartService.GetCartItemsCount();
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("");//navigates to the selected page, for examle /books or $"{abc}"
     }
