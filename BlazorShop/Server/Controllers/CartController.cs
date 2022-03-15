@@ -30,5 +30,11 @@ namespace BlazorShop.Server.Controllers
             var result = await _cartService.StoreCartItems(cartItems);//send the userId to the service
             return Ok(result);
         }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<ServiceResponse<int>>> GetCartItemsCount() 
+        { 
+            return await _cartService.GetCartItemsCount();
+        }
     }
 }
