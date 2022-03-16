@@ -4,6 +4,9 @@
     {
         public static void Seed(this ModelBuilder modelBuilder) 
         {
+            //for key to the orderitem
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => new { oi.OrderId, oi.ProductId, oi.ProductTypeId }); //oi = orderitem
             //for key to the cart
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.UserId, ci.ProductId, ci.ProductTypeId }); //ci = cartitem
