@@ -5,11 +5,13 @@ global using BlazorShop.Client.Services.CategorySerrvice;
 global using BlazorShop.Client.Services.AuthService;
 global using BlazorShop.Shared.Dto;
 global using Microsoft.AspNetCore.Components.Authorization;
+global using BlazorShop.Client.Services.CartService;
+global using BlazorShop.Client.Services.OrderService;
 using BlazorShop.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Blazored.LocalStorage;
-using BlazorShop.Client.Services.CartService;
+
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -24,5 +26,6 @@ builder.Services.AddScoped<IAuthService, AuthService>(); //As above
 builder.Services.AddOptions(); //for global using Microsoft.AspNetCore.Components.Authorization;
 builder.Services.AddAuthorizationCore(); //for global using Microsoft.AspNetCore.Components.Authorization;
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>(); //for global using Microsoft.AspNetCore.Components.Authorization;
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 await builder.Build().RunAsync();
