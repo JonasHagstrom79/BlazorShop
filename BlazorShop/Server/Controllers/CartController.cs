@@ -56,5 +56,12 @@ namespace BlazorShop.Server.Controllers
             var result = await _cartService.UpdateQuantity(cartItems);
             return Ok(result);
         }
+
+        [HttpDelete("{productId}/{productTypeId}")] //Delete and add a route where we set the parameters
+        public async Task<ActionResult<ServiceResponse<bool>>> RemoveItemFromCart(int productId, int productTypeId)
+        {
+            var result = await _cartService.RemoveItemFromCart(productId, productTypeId);
+            return Ok(result);
+        }
     }
 }
