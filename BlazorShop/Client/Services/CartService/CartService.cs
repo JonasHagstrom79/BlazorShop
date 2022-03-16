@@ -128,20 +128,36 @@ namespace BlazorShop.Client.Services.CartService
 
         public async Task UpdateQuantity(CartProductResponseDto product)
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
+            //checks if user is aut.
+            if (await IsUserAuthenticated())
             {
-                return;
+                //creates a new request object(our cart item)
+                var request = new CartItem
+                {
+                    ProductId = product.ProductId,
+                    Quantity = product.Quantity,
+                    ProductTypeId = product.ProductTypeId
+                };
+                //make the call with the route from CartController on the server([HttpPut("update-quantity")], UpateQuantiy
+                await _http.PutAsJsonAsync("api/cart/update-quantity", request); //Sending our request item
             }
-            //The item we want to update, finds with productId && productTypeId
-            var cartItem = cart.Find(x => x.ProductId == product.ProductId
-                && x.ProductTypeId == product.ProductTypeId);
-            if (cartItem != null)
+            else
             {
-                cartItem.Quantity = product.Quantity;
-                //after we update it we set the item again
-                await _localStorage.SetItemAsync("cart", cart);                
-            }
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null)
+                {
+                    return;
+                }
+                //The item we want to update, finds with productId && productTypeId
+                var cartItem = cart.Find(x => x.ProductId == product.ProductId
+                    && x.ProductTypeId == product.ProductTypeId);
+                if (cartItem != null)
+                {
+                    cartItem.Quantity = product.Quantity;
+                    //after we update it we set the item again
+                    await _localStorage.SetItemAsync("cart", cart);
+                }
+            }            
         }
 
         private async Task<bool> IsUserAuthenticated()

@@ -49,5 +49,12 @@ namespace BlazorShop.Server.Controllers
             var result = await _cartService.AddToCart(cartItems);
             return Ok(result);
         }
+
+        [HttpPut("update-quantity")] //giving it a route, put instead of post because it is not adding something
+        public async Task<ActionResult<ServiceResponse<bool>>>UpdateQuantity(CartItem cartItems)
+        {
+            var result = await _cartService.UpdateQuantity(cartItems);
+            return Ok(result);
+        }
     }
 }
