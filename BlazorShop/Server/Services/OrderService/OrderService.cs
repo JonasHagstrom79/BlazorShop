@@ -6,18 +6,16 @@ namespace BlazorShop.Server.Services.OrderService
     {
         private readonly DataContext _context;
         private readonly ICartService _cartService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthService _authService;
+
 
         //implement the datacontext, the cartservice and the http-context accessor
-        public OrderService(DataContext context, ICartService cartService, IHttpContextAccessor httpContextAccessor)
+        public OrderService(DataContext context, ICartService cartService, IAuthService authService)
         {
             _context = context;
             _cartService = cartService;
-            _httpContextAccessor = httpContextAccessor;
+            _authService = authService;
         }
-
-        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
 
         public async Task<ServiceResponse<bool>> PlaceOrder()
         {
@@ -37,7 +35,7 @@ namespace BlazorShop.Server.Services.OrderService
             //creates a new order
             var order = new Order
             {
-                UserId = GetUserId(),
+                UserId = _authService.GetUserId(),
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice, //from above
                 OrderItems = orderItems //from above
@@ -46,7 +44,7 @@ namespace BlazorShop.Server.Services.OrderService
             _context.Orders.Add(order);
             //removes the items in the cart
             _context.CartItems.RemoveRange(_context.CartItems
-                .Where(ci => ci.UserId == GetUserId()));
+                .Where(ci => ci.UserId == _authService.GetUserId()));
             
             await _context.SaveChangesAsync();
 

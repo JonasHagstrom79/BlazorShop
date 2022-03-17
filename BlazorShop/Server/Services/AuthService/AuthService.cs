@@ -9,12 +9,20 @@ namespace BlazorShop.Server.Services.AuthService
     {
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor; //access values from the webpage
 
-        public AuthService(DataContext context, IConfiguration configuration)//also inject IConfiguration for the token-secret
+        public AuthService(DataContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)//also inject IConfiguration for the token-secret
         {
             _context = context;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        /// <summary>
+        /// Gets the userID from httpContextAccessor
+        /// </summary>
+        /// <returns>int</returns>
+        public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         public async Task<ServiceResponse<string>> Login(string email, string password)
         {

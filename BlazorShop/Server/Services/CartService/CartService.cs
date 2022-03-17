@@ -5,21 +5,16 @@ namespace BlazorShop.Server.Services.CartService
     public class CartService : ICartService
     {
         private readonly DataContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthService _authService;
+
 
         //we nedd acess to the databas so add the ctor
-        public CartService(DataContext context, IHttpContextAccessor httpContextAccessor) //httpContextAccesssor to be able to access the user in the services
+        public CartService(DataContext context, IAuthService authService) //IAuthService to be able to access the user in the services
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _authService = authService;
         }
-
-        /// <summary>
-        /// Gets the userID from httpContextAccessor
-        /// </summary>
-        /// <returns>int</returns>
-        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
+        
         public async Task<ServiceResponse<List<CartProductResponseDto>>> GetCartProducts(List<CartItem> cartItems)
         {
             var result = new ServiceResponse<List<CartProductResponseDto>>
@@ -68,7 +63,7 @@ namespace BlazorShop.Server.Services.CartService
         public async Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems)
         {
             //sets the userId
-            cartItems.ForEach(cartItem => cartItem.UserId = GetUserId());
+            cartItems.ForEach(cartItem => cartItem.UserId = _authService.GetUserId());
             //AddRange allows to add more objects to the table
             _context.CartItems.AddRange(cartItems);
             await _context.SaveChangesAsync();
@@ -78,19 +73,19 @@ namespace BlazorShop.Server.Services.CartService
 
         public async Task<ServiceResponse<int>> GetCartItemsCount()
         {
-            var count = (await _context.CartItems.Where(ci => ci.UserId == GetUserId()).ToListAsync()).Count;
+            var count = (await _context.CartItems.Where(ci => ci.UserId == _authService.GetUserId()).ToListAsync()).Count;
             return new ServiceResponse<int> { Data = count }; //return a new serviceresponse where the data is our count
         }
 
         public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts()
         {
             return await GetCartProducts(await _context.CartItems //Gets the cart from the userId
-                .Where(ci => ci.UserId == GetUserId()).ToListAsync());
+                .Where(ci => ci.UserId == _authService.GetUserId()).ToListAsync());
         }
 
         public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
         {
-            cartItem.UserId = GetUserId();
+            cartItem.UserId = _authService.GetUserId();
 
             var sameItem = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
@@ -112,7 +107,7 @@ namespace BlazorShop.Server.Services.CartService
         {
             var dbCartItem = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
-                ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == GetUserId());
+                ci.ProductTypeId == cartItem.ProductTypeId && ci.UserId == _authService.GetUserId());
             if (dbCartItem == null)
             {
                 return new ServiceResponse<bool>
@@ -133,7 +128,7 @@ namespace BlazorShop.Server.Services.CartService
         {
             var dbCartItem = await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.ProductId == productId &&
-                ci.ProductTypeId == productTypeId && ci.UserId == GetUserId());
+                ci.ProductTypeId == productTypeId && ci.UserId == _authService.GetUserId());
             if (dbCartItem == null)
             {
                 return new ServiceResponse<bool>
