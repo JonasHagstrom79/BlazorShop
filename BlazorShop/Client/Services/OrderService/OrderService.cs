@@ -16,6 +16,12 @@ namespace BlazorShop.Client.Services.OrderService
             _navigationManager = navigationManager;
         }
 
+        public async Task<List<OrderOverviewResponseDto>> GetOrders()
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<OrderOverviewResponseDto>>>("api/order");
+            return result.Data;
+        }
+
         public async Task PlaceOrder()
         {
             if (await IsUserAuthenticated())
