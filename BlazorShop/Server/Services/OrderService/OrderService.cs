@@ -17,6 +17,49 @@ namespace BlazorShop.Server.Services.OrderService
             _authService = authService;
         }
 
+        public async Task<ServiceResponse<OrderDetailsResponseDto>> GetOrderDetails(int orderId)
+        {
+            var response = new ServiceResponse<OrderDetailsResponseDto>();
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product) //from each order item we include th product
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductType)
+                .Where(o => o.UserId == _authService.GetUserId() && o.Id == orderId)
+                .OrderByDescending(o => o.OrderDate)
+                .FirstOrDefaultAsync();
+            
+            if (order == null) 
+            {
+                response.Success = false;
+                response.Message = "Order not found.";
+                return response;
+            }
+
+            var orderDetailsResponse = new OrderDetailsResponseDto
+            {
+                OrderDate = order.OrderDate,
+                TotalPrice = order.TotalPrice,
+                Products = new List<OrderDetailsProductResponseDto>()
+            };
+
+            //Adds the stats for every item in the order
+            order.OrderItems.ForEach(item =>
+            orderDetailsResponse.Products.Add(new OrderDetailsProductResponseDto
+            {
+                ProductId = item.ProductId,
+                ImageUrl = item.Product.ImageUrl,
+                ProductType = item.ProductType.Name,
+                Quantity = item.Quantity,
+                Title = item.Product.Title,
+                TotalPrice = item.TotalPrice
+            }));
+
+            response.Data = orderDetailsResponse;
+
+            return response;
+        }
+
         public async Task<ServiceResponse<List<OrderOverviewResponseDto>>> GetOrders()
         {
             var response = new ServiceResponse<List<OrderOverviewResponseDto>>();
