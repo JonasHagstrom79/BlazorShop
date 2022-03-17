@@ -21,5 +21,12 @@ namespace BlazorShop.Server.Controllers
             var result = await _orderService.PlaceOrder();
             return Ok(result);
         }
+
+        [HttpGet]//default get method
+        public async Task<ActionResult<ServiceResponse<List<OrderOverviewResponseDto>>>> GetOrders() 
+        {
+            var result = await _orderService.GetOrders();
+            return Ok(result);
+        }
     }
 }
