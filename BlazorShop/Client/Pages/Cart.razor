@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 @inject IOrderService OrderService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Shopping Cart</PageTitle>
 
@@ -9,10 +10,6 @@
 @if (cartProducts == null || cartProducts.Count == 0)
 {
     <span>@message</span>
-}
-else if(orderPlaced)
-{
-    <span>Thank you for your order! You can check your orders <a href="orders">here</a>.</span>
 }
 else
 {
@@ -46,18 +43,16 @@ else
             Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price * product.Quantity) @*for each product we take the product price*@
         </div>
     </div> 
-    <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1">Place Order</button>
+    <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1">Checkout</button>
 }
 
 @code {
     List<CartProductResponseDto> cartProducts = null;
     string message = "Loading cart....";
-    bool orderPlaced = false; //to see if the order has been placed
-
+    
     //On initialization check for cart items, if so make webservice call to get the products
     protected override async Task OnInitializedAsync()
-    {
-        orderPlaced = false;
+    {        
         await LoadCart();
     }
 
@@ -90,8 +85,10 @@ else
 
     private async Task PlaceOrder()
     {
-        await OrderService.PlaceOrder();
-        await CartService.GetCartItemsCount();  //get the cartitems count again
-        orderPlaced = true;
+        string url = await OrderService.PlaceOrder(); //to Stripe
+        NavigationManager.NavigateTo(url);
+
+        //await CartService.GetCartItemsCount();  //get the cartitems count again
+        //orderPlaced = true;
     }
 }
