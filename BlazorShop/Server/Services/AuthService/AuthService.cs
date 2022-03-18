@@ -23,6 +23,11 @@ namespace BlazorShop.Server.Services.AuthService
         /// </summary>
         /// <returns>int</returns>
         public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        /// <summary>
+        /// Gets the userEmail from httpContextAccessor
+        /// </summary>
+        /// <returns>string</returns>
+        public string GetUserEmail() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
         public async Task<ServiceResponse<string>> Login(string email, string password)
         {
@@ -145,6 +150,6 @@ namespace BlazorShop.Server.Services.AuthService
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data = true, Message = "Password has been changed."};
-        }
+        }       
     }
 }

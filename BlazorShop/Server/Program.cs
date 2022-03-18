@@ -7,10 +7,10 @@ global using BlazorShop.Server.Services.CartService;
 global using BlazorShop.Server.Services.AuthService;
 global using BlazorShop.Shared.Dto;
 global using BlazorShop.Server.Services.OrderService;
+global using BlazorShop.Server.Services.PaymentService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using BlazorShop.Server.Services.OrderService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +32,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>(); //As above, add
 builder.Services.AddScoped<ICartService, CartService>(); //..
 builder.Services.AddScoped<IAuthService, AuthService>(); //..
 builder.Services.AddScoped<IOrderService, OrderService>(); //..
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl+. install the package
     .AddJwtBearer(options =>
     {
