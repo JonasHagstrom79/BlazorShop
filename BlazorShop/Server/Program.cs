@@ -11,8 +11,15 @@ global using BlazorShop.Server.Services.PaymentService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using BlazorShop.Server;
 
 var builder = WebApplication.CreateBuilder(args);
+//var paymentApiKey = builder.Configuration["Appsettings:StripeApiKey"];
+//var moviesConfig =
+//    builder.Configuration.GetSection("Appsettings").Get<WebApiOptions>();
+//paymentApiKey = moviesConfig.ApiKey;
+
+
 
 // Add services to the container.
 
@@ -49,7 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl
 builder.Services.AddHttpContextAccessor(); //to be able to access the user in the services
 
 var app = builder.Build();
-
+/*app.MapGet("/", () => paymentApiKey);*/ //added for payment api
 app.UseSwaggerUI(); //add swagger
 
 // Configure the HTTP request pipeline.
