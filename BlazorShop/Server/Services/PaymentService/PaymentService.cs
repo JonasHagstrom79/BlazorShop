@@ -10,7 +10,7 @@ namespace BlazorShop.Server.Services.PaymentService
         private readonly IOrderService _orderService;
         private readonly IConfiguration _config; //for the API-KEY IMPORTANT!!!
 
-        const string secret2 = ""; //Emtpy as for now while not needing the api webhook 
+        const string secret2 = "whsec_f18b0dec5bfd973a04b2691f08c6f6875f26daa0af204d29b3a73d2d7ec1b920"; //Emtpy as for now while not needing the api webhook 
         //string secret = Test(_config);
 
         //The Cart, Order and authentication for stripe
