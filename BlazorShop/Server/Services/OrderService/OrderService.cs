@@ -89,10 +89,10 @@ namespace BlazorShop.Server.Services.OrderService
             return response;
         }
 
-        public async Task<ServiceResponse<bool>> PlaceOrder()
+        public async Task<ServiceResponse<bool>> PlaceOrder(int userId)
         {
             //Get the products that is in the cart of the auth. user
-            var products = (await _cartService.GetDbCartProducts()).Data;
+            var products = (await _cartService.GetDbCartProducts(userId)).Data;
             decimal totalPrice = 0;
             products.ForEach(product => totalPrice += product.Price * product.Quantity);
 
@@ -107,7 +107,7 @@ namespace BlazorShop.Server.Services.OrderService
             //creates a new order
             var order = new Order
             {
-                UserId = _authService.GetUserId(),
+                UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice, //from above
                 OrderItems = orderItems //from above
@@ -116,7 +116,7 @@ namespace BlazorShop.Server.Services.OrderService
             _context.Orders.Add(order);
             //removes the items in the cart
             _context.CartItems.RemoveRange(_context.CartItems
-                .Where(ci => ci.UserId == _authService.GetUserId()));
+                .Where(ci => ci.UserId == userId));
             
             await _context.SaveChangesAsync();
 

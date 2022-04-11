@@ -77,10 +77,16 @@ namespace BlazorShop.Server.Services.CartService
             return new ServiceResponse<int> { Data = count }; //return a new serviceresponse where the data is our count
         }
 
-        public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts()
+        public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts(int? userId = null)
         {
+            //If we get the userId we use it, otherwise we get it from the auth-service
+            if (userId == null)
+            {
+                userId = _authService.GetUserId();
+            }
+
             return await GetCartProducts(await _context.CartItems //Gets the cart from the userId
-                .Where(ci => ci.UserId == _authService.GetUserId()).ToListAsync());
+                .Where(ci => ci.UserId == userId).ToListAsync());
         }
 
         public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)

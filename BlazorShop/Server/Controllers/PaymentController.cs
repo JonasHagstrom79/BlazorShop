@@ -21,5 +21,16 @@ namespace BlazorShop.Server.Controllers
             var session = await _paymentService.CreateCheckoutSession();
             return Ok(session.Url);
         }
+
+        [HttpPost] //The default post method
+        public async Task<ActionResult<ServiceResponse<bool>>> FulfilllOrder()
+        {
+            var response = await _paymentService.FulfillOrder(Request);//The http request object, why this works
+            if (!response.Success)
+            {
+                return BadRequest(response.Message);
+            }
+            return Ok(response);
+        }
     }
 }

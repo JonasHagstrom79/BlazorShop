@@ -10,12 +10,13 @@ namespace BlazorShop.Server.Services.PaymentService
         private readonly IOrderService _orderService;
         private readonly IConfiguration _config; //for the API-KEY IMPORTANT!!!
 
-        const string secret = ""; //Emtpy as for now while not needing the api webhook 
-                       
+        const string secret2 = ""; //Emtpy as for now while not needing the api webhook 
+        //string secret = Test(_config);
 
         //The Cart, Order and authentication for stripe
         public PaymentService(ICartService cartService, IAuthService authService, IOrderService orderService, IConfiguration config /*, PaymentService moviesConfig, WebApiOptions webApiOptions*/)
         {
+            //Test(_config);
             StripeConfiguration.ApiKey = config["Appsettings:StripeApiKey"];         
             _cartService = cartService;
             _authService = authService;
@@ -23,10 +24,11 @@ namespace BlazorShop.Server.Services.PaymentService
             _config = config;            
         }
 
-        public void Test(IConfiguration config) 
+        public string Test(IConfiguration _config) 
         {
-            var webHook = config["Appsettings:StripeWeebHook"];
-            return;
+            string secret = $"{_config["Appsettings:StripeWeebHook"]}";
+            //var webHook = config["Appsettings:StripeWeebHook"];
+            return secret;
         }      
 
         public async Task<Session> CreateCheckoutSession()
@@ -77,13 +79,29 @@ namespace BlazorShop.Server.Services.PaymentService
             return session;
         }
 
-        public async Task<ServiceResponse<bool>> FulfillOrder(HttpRequest request)
+        public async Task<ServiceResponse<bool>> FulfillOrder(HttpRequest request/*, IConfiguration config*/)
         {
             //New stream reader, this comes from stripe
             var json = await new StreamReader(request.Body).ReadToEndAsync();
             try
             {
+                //First we get a stripe event
+                var stripeEvent = EventUtility.ConstructEvent(
+                        json,
+                        request.Headers["Stripe-Signature"],
+                        secret2//Test(config) //The webhook original was secret
+                    );
+                //We want the checkout session completet event from stripe
+                if (stripeEvent.Type == Events.CheckoutSessionCompleted)
+                {
+                    //We create a new session
+                    var session = stripeEvent.Data.Object as Session;
+                    //This gives us the custom user e-mail-adress
+                    var user = await _authService.GetUserByEmail(session.CustomerEmail);
+                    await _orderService.PlaceOrder(user.Id);
+                }
                 return new ServiceResponse<bool> { Data = true };
+                
             }
             catch (StripeException e)
             {
