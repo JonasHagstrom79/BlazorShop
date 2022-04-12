@@ -8,10 +8,12 @@ global using BlazorShop.Server.Services.AuthService;
 global using BlazorShop.Shared.Dto;
 global using BlazorShop.Server.Services.OrderService;
 global using BlazorShop.Server.Services.PaymentService;
+global using BlazorShop.Server.Services.AddressService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BlazorShop.Server;
+using BlazorShop.Server.Services.AddressService;
 
 var builder = WebApplication.CreateBuilder(args);
 //var paymentApiKey = builder.Configuration["Appsettings:StripeApiKey"];
@@ -40,6 +42,7 @@ builder.Services.AddScoped<ICartService, CartService>(); //..
 builder.Services.AddScoped<IAuthService, AuthService>(); //..
 builder.Services.AddScoped<IOrderService, OrderService>(); //..
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl+. install the package
     .AddJwtBearer(options =>
     {
