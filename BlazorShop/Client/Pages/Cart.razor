@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @inject ICartService CartService
 @inject IOrderService OrderService
+@inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Shopping Cart</PageTitle>
@@ -42,17 +43,27 @@ else
         <div class="cart-product-price">
             Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price * product.Quantity) @*for each product we take the product price*@
         </div>
-    </div> 
+    </div>
+    @if (isAuthenticated)
+    {
+        <div>
+            <h5>Delivery Address</h5>
+            <AddressForm />
+        </div>
+    }
     <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1">Checkout</button>
 }
 
 @code {
     List<CartProductResponseDto> cartProducts = null;
     string message = "Loading cart....";
-    
+    //For the auth-service
+    bool isAuthenticated = false;
+
     //On initialization check for cart items, if so make webservice call to get the products
     protected override async Task OnInitializedAsync()
-    {        
+    {
+        isAuthenticated = await AuthService.IsUserAuthenticated();//Checks if user is authenticated
         await LoadCart();
     }
 

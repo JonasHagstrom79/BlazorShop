@@ -1,18 +1,20 @@
-﻿@inject IAddressService Addresservice
+﻿@inject IAddressService AddressService
+
 
 @if (address == null)
 {
-    <span>You haven´t specified a delivery address yet. 
-        <button class="btn" @onclick="InitAddress">Add an address</button>
+    <span>
+        You haven't specified a delivery address, yet.
+        <button class="btn" @onclick="InitAddress">Add an address?</button>
     </span>
 }
-else if(!editAddress)
+else if (!editAddress)
 {
     <p>
-        <span>@address.FirstName @address.LastName</span>
-        <span>@address.Street</span>
-        <span>@address.City, @address.State, @address.Zip</span>
-        <span>@address.Country</span>
+        <span>@address.FirstName @address.LastName</span><br />
+        <span>@address.Street</span><br />
+        <span>@address.City, @address.State, @address.Zip</span><br />
+        <span>@address.Country</span><br />
     </p>
     <button class="btn btn-primary" @onclick="EditAddress">Edit</button>
 }
@@ -21,37 +23,37 @@ else
     <EditForm Model="address" OnSubmit="SubmitAddress">
         <div class="mb-3">
             <label for="firstname">First Name</label>
-            <InputText id="firstname" @bind-value="address.FirstName" class"form-control" />
+            <InputText id="firstname" @bind-Value="address.FirstName" class="form-control" />
         </div>
         <div class="mb-3">
             <label for="lastname">Last Name</label>
-            <InputText id="lasttname" @bind-value="address.LastName" class"form-control" />
+            <InputText id="lastname" @bind-Value="address.LastName" class="form-control" />
         </div>
         <div class="mb-3">
             <label for="street">Street</label>
-            <InputText id="street" @bind-value="address.Street" class"form-control" />
+            <InputText id="street" @bind-Value="address.Street" class="form-control" />
         </div>
         <div class="mb-3">
             <label for="city">City</label>
-            <InputText id="city" @bind-value="address.City" class"form-control" />
+            <InputText id="city" @bind-Value="address.City" class="form-control" />
         </div>
         <div class="mb-3">
             <label for="state">State</label>
-            <InputText id="state" @bind-value="address.State" class"form-control" />
+            <InputText id="state" @bind-Value="address.State" class="form-control" />
         </div>
         <div class="mb-3">
-            <label for="zip">Zip/Postal Code</label>
-            <InputText id="zip" @bind-value="address.Zip" class"form-control" />
+            <label for="zip">ZIP/Postal Code</label>
+            <InputText id="zip" @bind-Value="address.Zip" class="form-control" />
         </div>
         <div class="mb-3">
             <label for="country">Country</label>
-            <InputText id="country" @bind-value="address.Country" class"form-control" />
+            <InputText id="country" @bind-Value="address.Country" class="form-control" />
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </EditForm>
 }
 
-@code {
+@code {    
     //Set the address
     Address address = null;
     //Flag for setting the current state
@@ -60,15 +62,14 @@ else
     //On initialization we get the current addres
     protected override async Task OnInitializedAsync()
     {
-        address = await Addresservice.GetAddress();
+        address = await AddressService.GetAddress();
     }
     //In our form we need a submit function
     private async Task SubmitAddress()
     {
         editAddress = false;
-        address = await Addresservice.AddOrUpdateAddress(address);
+        address = await AddressService.AddOrUpdateAddress(address);
     }
-
     //Create a new address, create user
     private void InitAddress()
     {
