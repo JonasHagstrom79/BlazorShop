@@ -8,14 +8,81 @@
         {
             _context = context;
         }
-        public async Task<ServiceResponse<List<Category>>> GetCategoriesAsync()
+
+        public async Task<ServiceResponse<List<Category>>> AddCategory(Category category)
         {
-            //To get acess to our categories
-            var categories = await _context.Categories.ToListAsync();
+            category.Editing = category.IsNew = false; //If not in this way they will get returned as true
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync(); //Saves to db
+            return await GetAdminCategories(); //returns
+        }
+
+        public async Task<ServiceResponse<List<Category>>> DeleteCategory(int id)
+        {
+            Category category = await GetCategoryById(id);
+            if (category == null) 
+            {
+                return new ServiceResponse<List<Category>>
+                {
+                    Success = false,
+                    Message = "Category not found."
+                };
+            }
+            category.Deleted = true;
+            await _context.SaveChangesAsync();
+
+            return await GetAdminCategories();
+        }
+
+        private async Task<Category> GetCategoryById(int id)
+        {
+            //first get a category
+            return await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<ServiceResponse<List<Category>>> GetAdminCategories()
+        {
+            var categories = await _context.Categories
+                .Where(c => !c.Deleted)
+                .ToListAsync();
             return new ServiceResponse<List<Category>>
             {
                 Data = categories
             };
+        }
+
+        public async Task<ServiceResponse<List<Category>>> GetCategoriesAsync()
+        {
+            //To get acess to our categories
+            var categories = await _context.Categories
+                .Where(c => !c.Deleted && c.Visible)
+                .ToListAsync();
+            return new ServiceResponse<List<Category>>
+            {
+                Data = categories
+            };
+        }
+
+        public async Task<ServiceResponse<List<Category>>> UpdateCategory(Category category)
+        {
+            var dbCategory = await GetCategoryById(category.Id);
+            if (dbCategory == null)
+            {
+                return new ServiceResponse<List<Category>>
+                {
+                    Success = false,
+                    Message = "Category not found."
+                };
+            }
+            //Just override the properties
+            dbCategory.Name = category.Name;
+            dbCategory.Url = category.Url;
+            dbCategory.Visible = category.Visible;
+
+            await _context.SaveChangesAsync();
+
+            return await GetAdminCategories();
+
         }
     }
 }
