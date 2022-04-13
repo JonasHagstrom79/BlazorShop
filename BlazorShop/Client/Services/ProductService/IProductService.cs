@@ -5,6 +5,7 @@
         event Action ProductsChanged; //add event listerner
         //The productlist itself
         List<Product> Products { get; set; }
+        List<Product> AdminProducts { get; set; }
         public string Message { get; set; } //To display search result
         public int CurrentPage { get; set; }
         public int PageCount { get; set; }
@@ -13,5 +14,6 @@
         Task<ServiceResponse<Product>> GetProduct(int productId);
         Task SearchProducts(string searchText, int page); //NOT async in name
         Task<List<string>> GetProductSearchSuggestions(string searchText); //NOT async in name
+        Task GetAdminProducts();//we want all the products so no input
     }
 }
