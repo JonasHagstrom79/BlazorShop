@@ -3,10 +3,12 @@
     public class ProductService : IProductService
     {
         private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductService(DataContext context)
+        public ProductService(DataContext context, IHttpContextAccessor httpContextAccessor)//Http for checking if the current user is admin or not
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ServiceResponse<List<Product>>> GetAdminProductsAsync()
@@ -43,10 +45,24 @@
         public async Task<ServiceResponse<Product>> GetProductAsync(int productID)
         {
             var response = new ServiceResponse<Product>();
-            var product = await _context.Products
+            Product product = null; //for httpaccessor
+
+            if (_httpContextAccessor.HttpContext.User.IsInRole("Admin"))
+            {
+                product = await _context.Products
+                .Include(p => p.Variants.Where(v => !v.Deleted)) //For every product we want to add the varinats, if not we will have an empty list. Also only not deleted varainte(v)
+                .ThenInclude(v => v.ProductType) //for the variants we want to include the product type
+                .FirstOrDefaultAsync(p => p.Id == productID && !p.Deleted);  //to find the proper single product, and not deleted products and visible
+            }
+            else
+            {
+                product = await _context.Products
                 .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted)) //For every product we want to add the varinats, if not we will have an empty list. Also only visible and not deleted varainte(v)
                 .ThenInclude(v => v.ProductType) //for the variants we want to include the product type
                 .FirstOrDefaultAsync(p => p.Id == productID && !p.Deleted && p.Visible);  //to find the proper single product, and not deleted products and visible
+            }
+
+            
             if (product == null) 
             {
                 response.Success = false;
