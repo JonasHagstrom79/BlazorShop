@@ -27,7 +27,7 @@ namespace BlazorShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<Product>>> CreateProductAsync(Product product)
         {
             //Get products from datacontext
-            var result = await _productService.CreateProductAsync(product);
+            var result = await _productService.CreateProduct(product);
             return Ok(result);
         }
 
@@ -35,7 +35,7 @@ namespace BlazorShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<Product>>> UpdateProductAsync(Product product)
         {
             //Get products from datacontext
-            var result = await _productService.UpdateProductAsync(product);
+            var result = await _productService.UpdateProduct(product);
             return Ok(result);
         }
 
@@ -43,7 +43,7 @@ namespace BlazorShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<bool>>> DeleteProductAsync(int id)
         {
             //Get products from datacontext
-            var result = await _productService.DeleteProductAsync(id);
+            var result = await _productService.DeleteProduct(id);
             return Ok(result);
         }
 

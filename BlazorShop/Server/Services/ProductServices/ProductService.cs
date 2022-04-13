@@ -11,7 +11,7 @@
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ServiceResponse<Product>> CreateProductAsync(Product product)
+        public async Task<ServiceResponse<Product>> CreateProduct(Product product)
         {
             foreach (var variant in product.Variants)
             {
@@ -22,7 +22,7 @@
             return new ServiceResponse<Product> { Data = product };
         }
 
-        public async Task<ServiceResponse<bool>> DeleteProductAsync(int productId)
+        public async Task<ServiceResponse<bool>> DeleteProduct(int productId)
         {
             var dbProduct = await _context.Products.FindAsync(productId);
             if (dbProduct == null)
@@ -206,7 +206,7 @@
             return response;
         }
 
-        public async Task<ServiceResponse<Product>> UpdateProductAsync(Product product)
+        public async Task<ServiceResponse<Product>> UpdateProduct(Product product)
         {
             var dbProduct = await _context.Products.FindAsync(product.Id);
             if (dbProduct == null)
