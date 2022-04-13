@@ -8,6 +8,7 @@ global using Microsoft.AspNetCore.Components.Authorization;
 global using BlazorShop.Client.Services.CartService;
 global using BlazorShop.Client.Services.OrderService;
 global using BlazorShop.Client.Services.AddressService;
+global using BlazorShop.Client.Services.ProductTypeService;
 using BlazorShop.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -29,5 +30,6 @@ builder.Services.AddOptions(); //for global using Microsoft.AspNetCore.Component
 builder.Services.AddAuthorizationCore(); //for global using Microsoft.AspNetCore.Components.Authorization;
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>(); //for global using Microsoft.AspNetCore.Components.Authorization;
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
 
 await builder.Build().RunAsync();
