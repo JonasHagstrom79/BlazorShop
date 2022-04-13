@@ -18,6 +18,7 @@
 
         public event Action ProductsChanged; //Event lisener
 
+
         public async Task<Product> CreateProduct(Product product)
         {
             var result = await _http.PostAsJsonAsync("api/product", product);
@@ -42,13 +43,18 @@
                 Message = "No products found.";
         }
 
+        public Task<ServiceResponse<Product>> GetProduct(int productId)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets a Product on the client
         /// </summary>
         /// <param name="productId"></param>
         /// <returns>Product</returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<ServiceResponse<Product>> GetProduct(int productId)
+        public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<Product>>($"api/product/{productId}"); //add a parameter to the string
             return result;
@@ -58,15 +64,18 @@
         /// Get the products from the Database
         /// </summary>
         /// <returns>List Products</returns>
+
         public async Task GetProducts(string? categoryUrl = null)
         {
             var result = categoryUrl == null ? //use ternery operator 
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/featured") : //if null use this call(IproductService)
                 await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/category/{categoryUrl}"); //if not null use this(IproductService)
+
             if (result != null && result.Data != null)
             {
                 Products = result.Data;
             }
+
             CurrentPage = 1;
             PageCount = 0;
             if(Products.Count == 0) { Message = "No products found"; }
@@ -78,7 +87,7 @@
         public async Task<List<string>> GetProductSearchSuggestions(string searchText)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<string>>>($"api/product/searchsuggestions/{searchText}");
-            return result.Data;
+            return result.Data; //
         }
 
         public async Task SearchProducts(string searchText, int page)
@@ -104,5 +113,7 @@
             var content = await result.Content.ReadFromJsonAsync<ServiceResponse<Product>>();
             return content.Data;
         }
+
+
     }
 }

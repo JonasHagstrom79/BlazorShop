@@ -18,6 +18,7 @@ namespace BlazorShop.Shared
         public string Title { get; set; } = string.Empty; //To avoid null reference exeption
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
+
         //[Column(TypeName= "decimal(18,2)")] //define the digits for the model
         //public decimal Price { get; set; }//price
         public Category? Category { get; set; } //Link to category
@@ -30,6 +31,7 @@ namespace BlazorShop.Shared
         public bool Editing { get; set; } = false;//Not in the database
         [NotMapped]
         public bool IsNew { get; set; } = false;//Not in the database
+
         #endregion
     }
 }

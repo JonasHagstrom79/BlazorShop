@@ -9,11 +9,13 @@ namespace BlazorShop.Shared
 {
     public class ProductType
     {
+
         public int Id { get; set; } 
         public string Name { get; set; } = string.Empty;
         [NotMapped] //Not a coulumn in the Database
         public bool Editing { get; set; } = false;//Not in the database
         [NotMapped]
         public bool IsNew { get; set; } = false;//Not in the database
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace BlazorShop.Client.Services.ProductService
 {
     public interface IProductService
+
     {
         event Action ProductsChanged; //add event listerner
         //The productlist itself
@@ -18,5 +19,6 @@
         Task<Product> CreateProduct(Product product);
         Task<Product> UpdateProduct(Product product);
         Task DeleteProduct(Product product);
+
     }
 }

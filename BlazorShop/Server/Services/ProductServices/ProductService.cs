@@ -125,6 +125,7 @@
             var response = new ServiceResponse<List<Product>>
             {
                 Data = await _context.Products
+
                     .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()) &&
                     p.Visible && !p.Deleted)//compare url and put them into a list
                     .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted)) //Adds the variants
@@ -132,6 +133,7 @@
             };
             return response;
         }
+
 
         /// <summary>
         /// Get every word from a seach
@@ -260,5 +262,6 @@
                                 .Include(p => p.Variants) //include the variants
                                 .ToListAsync();
         }
+
     }
 }

@@ -4,12 +4,14 @@
     {
         public static void Seed(this ModelBuilder modelBuilder) 
         {
+
             //for key to the orderitem
             modelBuilder.Entity<OrderItem>()
                 .HasKey(oi => new { oi.OrderId, oi.ProductId, oi.ProductTypeId }); //oi = orderitem
             //for key to the cart
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.UserId, ci.ProductId, ci.ProductTypeId }); //ci = cartitem
+
             //for the key
             modelBuilder.Entity<ProductVariant>()
                 .HasKey(p => new { p.ProductId, p.ProductTypeId } );//Composite primary key
@@ -27,6 +29,7 @@
                     new ProductType { Id = 9, Name = "PlayStation" },
                     new ProductType { Id = 10, Name = "Xbox" }
                 );
+
             #endregion
 
             #region Category
@@ -60,8 +63,10 @@
                     Title = "The Hitchhiker's Guide to the Galaxy",
                     Description = "The Hitchhiker's Guide to the Galaxy[note 1] (sometimes referred to as HG2G,[1] HHGTTG,[2] H2G2,[3] or tHGttG) is a comedy science fiction franchise created by Douglas Adams. Originally a 1978 radio comedy broadcast on BBC Radio 4, it was later adapted to other formats, including stage shows, novels, comic books, a 1981 TV series, a 1984 text-based computer game, and 2005 feature film. ",
                     ImageUrl = "https://upload.wikimedia.org/wikipedia/en/b/bd/H2G2_UK_front_cover.jpg",
+
                     CategoryId = 1,
                     Featured = true
+
                 },
                 new Product
                 {
