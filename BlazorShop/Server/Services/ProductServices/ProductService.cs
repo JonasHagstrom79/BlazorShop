@@ -14,8 +14,8 @@
             var response = new ServiceResponse<List<Product>>
             {
                 Data = await _context.Products
-                    .Where(p => p.Featured)
-                    .Include(p => p.Variants)
+                    .Where(p => p.Featured && p.Visible && !p.Deleted) //Only visible and not deleted
+                    .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
                     .ToListAsync()
             };
             return response;
@@ -31,9 +31,9 @@
         {
             var response = new ServiceResponse<Product>();
             var product = await _context.Products
-                .Include(p => p.Variants) //For every product we want to add the varinats, if not we will have an empty list
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted)) //For every product we want to add the varinats, if not we will have an empty list. Also only visible and not deleted varainte(v)
                 .ThenInclude(v => v.ProductType) //for the variants we want to include the product type
-                .FirstOrDefaultAsync(p => p.Id == productID);  //to find the proper single product
+                .FirstOrDefaultAsync(p => p.Id == productID && !p.Deleted && p.Visible);  //to find the proper single product, and not deleted products and visible
             if (product == null) 
             {
                 response.Success = false;
@@ -54,7 +54,10 @@
         {
             var response = new ServiceResponse<List<Product>>
             {
-                Data = await _context.Products.Include(p => p.Variants).ToListAsync() //We dont need the product types here because we wont show them on the client
+                Data = await _context.Products
+                .Where(p => p.Visible && !p.Deleted) //visible and not deleted
+                .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted))
+                .ToListAsync() //We dont need the product types here because we wont show them on the client
             };
             return response;
         }
@@ -64,8 +67,9 @@
             var response = new ServiceResponse<List<Product>>
             {
                 Data = await _context.Products
-                    .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()))//compare url and put them into a list
-                    .Include(p => p.Variants) //Adds the variants
+                    .Where(p => p.Category.Url.ToLower().Equals(categoryUrl.ToLower()) &&
+                    p.Visible && !p.Deleted)//compare url and put them into a list
+                    .Include(p => p.Variants.Where(v => v.Visible && !v.Deleted)) //Adds the variants
                     .ToListAsync()
             };
             return response;
@@ -123,7 +127,8 @@
             var products = await _context.Products
                                 .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
                                 ||
-                                p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
+                                    p.Description.ToLower().Contains(searchText.ToLower()) &&
+                                    p.Visible && !p.Deleted) //Filter decription
                                 .Include(p => p.Variants)
                                 .Skip((page - 1) * (int)pageResults) //For each page we skip two products
                                 .Take((int)pageResults) //from the result we take the next two
@@ -148,7 +153,8 @@
             return await _context.Products
                                 .Where(p => p.Title.ToLower().Contains(searchText.ToLower()) //Filter title
                                 ||
-                                p.Description.ToLower().Contains(searchText.ToLower())) //Filter decription
+                                    p.Description.ToLower().Contains(searchText.ToLower()) &&
+                                    p.Visible && !p.Deleted) //Filter decription
                                 .Include(p => p.Variants) //include the variants
                                 .ToListAsync();
         }
