@@ -8,5 +8,8 @@
 
         //The method
         Task GetProductTypes();
+        Task AddProductType(ProductType productType);
+        Task UpdateProductType(ProductType productType);
+        ProductType CreateNewProductType();
     }
 }
