@@ -9,6 +9,19 @@
             _context = context;
         }
 
+        public async Task<ServiceResponse<List<Product>>> GetAdminProductsAsync()
+        {
+            var response = new ServiceResponse<List<Product>>
+            {
+                Data = await _context.Products
+                .Where(p => !p.Deleted) // all products that are not deleted
+                .Include(p => p.Variants.Where(v => !v.Deleted))
+                .ThenInclude(v => v.ProductType)
+                .ToListAsync() //We dont need the product types here because we wont show them on the client
+            };
+            return response;
+        }
+
         public async Task<ServiceResponse<List<Product>>> GetFeaturdeProductsAsync()
         {
             var response = new ServiceResponse<List<Product>>

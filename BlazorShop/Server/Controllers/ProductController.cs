@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorShop.Server.Controllers
@@ -12,6 +13,14 @@ namespace BlazorShop.Server.Controllers
         public ProductController(IProductService productService)//dependency injection, made global
         {            
             _productService = productService;
+        }
+
+        [HttpGet("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProductsAsync() 
+        {
+            //Get products from datacontext
+            var result = await _productService.GetAdminProductsAsync();
+            return Ok(result);
         }
 
         [HttpGet]        
