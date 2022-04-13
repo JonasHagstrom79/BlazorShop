@@ -15,5 +15,8 @@
         Task SearchProducts(string searchText, int page); //NOT async in name
         Task<List<string>> GetProductSearchSuggestions(string searchText); //NOT async in name
         Task GetAdminProducts();//we want all the products so no input
+        Task<Product> CreateProduct(Product product);
+        Task<Product> UpdateProduct(Product product);
+        Task DeleteProduct(Product product);
     }
 }
