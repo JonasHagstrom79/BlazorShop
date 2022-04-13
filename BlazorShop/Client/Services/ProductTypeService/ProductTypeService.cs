@@ -13,7 +13,7 @@
             _http = http;
         }
 
-        public async Task GetProductTyes()
+        public async Task GetProductTypes()
         {
             var result = await _http
                 .GetFromJsonAsync<ServiceResponse<List<ProductType>>>("api/producttype");//from our product-type controller url="api/producttype"

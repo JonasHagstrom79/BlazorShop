@@ -7,6 +7,6 @@
         public List<ProductType> ProductTypes { get; set; }
 
         //The method
-        Task GetProductTyes();
+        Task GetProductTypes();
     }
 }
