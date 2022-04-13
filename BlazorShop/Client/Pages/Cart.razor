@@ -1,19 +1,22 @@
 ﻿@page "/cart"
 @inject ICartService CartService
+@inject IOrderService OrderService
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Shopping Cart</PageTitle>
 
 <h3>Shopping Cart</h3>
 
-@if(cartProducts == null || cartProducts.Count == 0)
+@if (cartProducts == null || cartProducts.Count == 0)
 {
     <span>@message</span>
 }
 else
 {
-   <div>
-       @foreach (var product in cartProducts)
-      {
+    <div>
+        @foreach (var product in cartProducts)
+        {
             <div class="container">
                 <div class="image-wrapper">
                     <img src="@product.ImageUrl" class="image"/>
@@ -36,20 +39,31 @@ else
                     €@(product.Price * product.Quantity)
                 </div>
             </div>
-      }
-      <div class="cart-product-price">
-        Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price * product.Quantity) @*for each product we take the product price*@
-      </div>
-   </div> 
+        }
+        <div class="cart-product-price">
+            Total (@cartProducts.Count): €@cartProducts.Sum(product => @product.Price * product.Quantity) @*for each product we take the product price*@
+        </div>
+    </div>
+    @if (isAuthenticated)
+    {
+        <div>
+            <h5>Delivery Address</h5>
+            <AddressForm />
+        </div>
+    }
+    <button @onclick="PlaceOrder" class="btn alert-success float-end mt-1">Checkout</button>
 }
 
 @code {
     List<CartProductResponseDto> cartProducts = null;
     string message = "Loading cart....";
+    //For the auth-service
+    bool isAuthenticated = false;
 
     //On initialization check for cart items, if so make webservice call to get the products
     protected override async Task OnInitializedAsync()
     {
+        isAuthenticated = await AuthService.IsUserAuthenticated();//Checks if user is authenticated
         await LoadCart();
     }
 
@@ -62,15 +76,12 @@ else
     //reload our complete cart
     private async Task LoadCart()
     {
-        if((await CartService.GetCartItems()).Count == 0)
+        await CartService.GetCartItemsCount();
+        cartProducts = await CartService.GetCartProducts();
+        if(cartProducts == null || cartProducts.Count == 0)
         {
-            message = "Your cart is empty.";
-            cartProducts = new List<CartProductResponseDto>();
-        }
-        else
-        {
-            cartProducts = await CartService.GetCartProducts();
-        }
+            message = "Your cart is empty.";            
+        }       
     }
 
     private async Task UpdateQuantity(ChangeEventArgs e, CartProductResponseDto product)
@@ -81,5 +92,14 @@ else
             product.Quantity = 1;
         }
         await CartService.UpdateQuantity(product);
+    }
+
+    private async Task PlaceOrder()
+    {
+        string url = await OrderService.PlaceOrder(); //to Stripe
+        NavigationManager.NavigateTo(url);
+
+        //await CartService.GetCartItemsCount();  //get the cartitems count again
+        //orderPlaced = true;
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/register"
+@inject IAuthService AuthService
 
 <PageTitle>Register</PageTitle>
 
@@ -22,6 +23,9 @@
         <ValidationMessage For="@(() => user.ComfirmPassword)" />
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
+    <div class="@messageCssClass">
+        <span>@message</span>
+    </div>
     @*<ValidationSummary />*@ @*To see if the component worked*@
 </EditForm>
 
@@ -29,8 +33,18 @@
     //to be able to use the EditForm we need a model
     UserRegister user = new UserRegister();
 
-    void HandleRegistration()
+    string message = string.Empty;
+    string messageCssClass = string.Empty; //to be able to change color of the text
+
+    async Task HandleRegistration()
     {
-        Console.WriteLine($"Register User with the Email {user.Email}");
+        var result = await AuthService.Register(user);
+        message = result.Message;
+        if (result.Success)
+        {
+            messageCssClass = "text-success";
+        }
+        else
+            messageCssClass = "text-danger";
     }
 }

@@ -6,94 +6,166 @@ namespace BlazorShop.Client.Services.CartService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _http;
+        private readonly IAuthService _authService;
 
-        public CartService(ILocalStorageService localStorage, HttpClient http) //we need the localstorage
+        public CartService(ILocalStorageService localStorage, HttpClient http, IAuthService authService) //we need the localstorage, and to know if the user is authenticated
         {
             _localStorage = localStorage;
             _http = http;
+            _authService = authService;
         }
         
         public event Action OnChange;
 
-        public async Task AddToCart(CartItem cartItem)
+
+        public async Task AddToCart(CartItem cartItem)//If the user is not auth=items from localstorage, If aut = get the items from the database
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null) //if no cart creates a new
+            if (await _authService.IsUserAuthenticated())
             {
-                cart = new List<CartItem>(); //initilaze
-            }
-            //Checks if the same item already exists in the cart
-            var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
-                x.ProductTypeId == cartItem.ProductTypeId);
-            if (sameItem == null)
-            {
-                cart.Add(cartItem);
+                await _http.PostAsJsonAsync("api/cart/add", cartItem); //postst with the "add" from AddToCart+add from server(Cartcontroller)
             }
             else
             {
-                sameItem.Quantity += cartItem.Quantity;
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null) //if no cart creates a new
+                {
+                    cart = new List<CartItem>(); //initilaze
+                }
+                //Checks if the same item already exists in the cart
+                var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
+                    x.ProductTypeId == cartItem.ProductTypeId);
+                if (sameItem == null)
+                {
+                    cart.Add(cartItem);
+                }
+                else
+                {
+                    sameItem.Quantity += cartItem.Quantity;
+                }
+                //sets the cart
+                await _localStorage.SetItemAsync("cart", cart);
             }            
-            //sets the cart
-            await _localStorage.SetItemAsync("cart", cart);
             //to update the cart
-            OnChange.Invoke();
-        }
-
-        public async Task<List<CartItem>> GetCartItems()
+            await GetCartItemsCount();
+        }        
+              
+        public async Task GetCartItemsCount()
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null) //if no cart creates a new
+            if (await _authService.IsUserAuthenticated())
             {
-                cart = new List<CartItem>(); //initilaze
+                var result = await _http.GetFromJsonAsync<ServiceResponse<int>> ("api/cart/count");
+                var count = result.Data;
+                //Set the count to the localstorage
+                await _localStorage.SetItemAsync<int>("cartItemsCount", count);
             }
-            return cart;
+            else
+            {
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                await _localStorage.SetItemAsync<int>("cartItemsCount", cart != null ? cart.Count : 0 ); //The value frpm localstorage, NOT the database. if not null sets to cart.count, otherwise to 0
+            }
+            OnChange.Invoke();
         }
 
         public async Task<List<CartProductResponseDto>> GetCartProducts() //Need to inject the Http-client in the constructor also
         {
-            var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            var response = await _http.PostAsJsonAsync("api/cart/products", cartItems); //second is the obkject to send through the body
-            var cartProducts = 
-                await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>(); //var response is a http message so need to read from json
-            return cartProducts.Data;
+            //Check if the user is authenticated
+            if (await _authService.IsUserAuthenticated())
+            {
+                var response = await _http.GetFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>("api/cart"); //second is the obkject to send through the body
+                return response.Data;
+            }
+            else
+            {
+                var cartItems = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cartItems == null)
+                {
+                    return new List<CartProductResponseDto>();
+                }
+                var response = await _http.PostAsJsonAsync("api/cart/products", cartItems); //second is the obkject to send through the body
+                var cartProducts =
+                    await response.Content.ReadFromJsonAsync<ServiceResponse<List<CartProductResponseDto>>>(); //var response is a http message so need to read from json
+                return cartProducts.Data;
+            }
+            
         }
 
         public async Task RemoveProductFromCart(int productId, int productTypeId)
         {
-            //get our cart
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
+            //check if the user is authenticated
+            if (await _authService.IsUserAuthenticated())
+            {
+                //make our call, with a route of parameters
+                await _http.DeleteAsync($"api/cart/{productId}/{productTypeId}");
+            }
+            else
+            {
+                //get our cart
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null)
+                {
+                    return;
+                }
+                //The item we want to remove, finds with productId && productTypeId
+                var cartItem = cart.Find(x => x.ProductId == productId
+                    && x.ProductTypeId == productTypeId);
+                if (cartItem != null)
+                {
+                    cart.Remove(cartItem);
+                    //after we remove it we set the item again
+                    await _localStorage.SetItemAsync("cart", cart);                    
+                }
+            }            
+        }
+
+        public async Task StoreCartItems(bool emtyLocalCart = false)
+        {
+            //get the local cart
+            var localCart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+            if (localCart == null)
             {
                 return;
             }
-            //The item we want to remove, finds with productId && productTypeId
-            var cartItem = cart.Find(x => x.ProductId == productId
-                && x.ProductTypeId == productTypeId);
-            if (cartItem != null)
+            //with that information we store all the cartitems in the database
+            await _http.PostAsJsonAsync("api/cart", localCart);
+            //if we want to empty the localcart
+            if (emtyLocalCart)
             {
-                cart.Remove(cartItem);
-                //after we remove it we set the item again
-                await _localStorage.SetItemAsync("cart", cart);
-                OnChange.Invoke();//cart counter will re-render itself
+                await _localStorage.RemoveItemAsync("cart");
             }
         }
 
         public async Task UpdateQuantity(CartProductResponseDto product)
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
+            //checks if user is aut.
+            if (await _authService.IsUserAuthenticated())
             {
-                return;
+                //creates a new request object(our cart item)
+                var request = new CartItem
+                {
+                    ProductId = product.ProductId,
+                    Quantity = product.Quantity,
+                    ProductTypeId = product.ProductTypeId
+                };
+                //make the call with the route from CartController on the server([HttpPut("update-quantity")], UpateQuantiy
+                await _http.PutAsJsonAsync("api/cart/update-quantity", request); //Sending our request item
             }
-            //The item we want to update, finds with productId && productTypeId
-            var cartItem = cart.Find(x => x.ProductId == product.ProductId
-                && x.ProductTypeId == product.ProductTypeId);
-            if (cartItem != null)
+            else
             {
-                cartItem.Quantity = product.Quantity;
-                //after we update it we set the item again
-                await _localStorage.SetItemAsync("cart", cart);                
-            }
-        }
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null)
+                {
+                    return;
+                }
+                //The item we want to update, finds with productId && productTypeId
+                var cartItem = cart.Find(x => x.ProductId == product.ProductId
+                    && x.ProductTypeId == product.ProductTypeId);
+                if (cartItem != null)
+                {
+                    cartItem.Quantity = product.Quantity;
+                    //after we update it we set the item again
+                    await _localStorage.SetItemAsync("cart", cart);
+                }
+            }            
+        }        
     }
 }

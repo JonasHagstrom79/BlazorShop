@@ -1,0 +1,67 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.WebUtilities
+@inject IAuthService AuthService
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICartService CartService
+
+<PageTitle>Login</PageTitle>
+
+<h3>Login</h3>
+
+<EditForm Model="user" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator /> @*looks for dataannotations on the model*@
+    <div class="mb-3">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="user.Email" class="form-control" />
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="user.Password" class="form-control" type="password" /> 
+        <ValidationMessage For="@(() => user.Password)" />
+    </div>    
+    <button type="submit" class="btn btn-primary">Login</button>    
+</EditForm>
+<div class="text-danger">
+    <span>@errorMessage</span>
+</div>
+
+@code {
+    //Line 3, neet to store the token in localstorage
+    //we need a model because we will use an edit form similar to the registration
+    private UserLogin user = new UserLogin();
+
+    private string errorMessage = string.Empty;
+    private string returnUrl = string.Empty; //to remember login
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri); //get the absolut route to the url that is set in the browser
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var url))
+        {
+            returnUrl = url;
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        var result = await AuthService.Login(user);
+        if(result.Success)
+        {
+            errorMessage = string.Empty;
+
+            await LocalStorage.SetItemAsync("authToken", result.Data);
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            await CartService.StoreCartItems(true); //Empty the local storage
+            await CartService.GetCartItemsCount(); //Get the count for the count
+            //Navigatemanager navigates to the homepage
+            NavigationManager.NavigateTo(returnUrl);//HÄR kanske man kan göra med B-arbetet?
+        }
+        else
+        {
+            errorMessage = result.Message;
+        }
+    }  
+}

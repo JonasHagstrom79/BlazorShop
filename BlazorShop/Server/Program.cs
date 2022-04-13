@@ -6,10 +6,23 @@ global using BlazorShop.Server.Services.CategoryServices;
 global using BlazorShop.Server.Services.CartService;
 global using BlazorShop.Server.Services.AuthService;
 global using BlazorShop.Shared.Dto;
+global using BlazorShop.Server.Services.OrderService;
+global using BlazorShop.Server.Services.PaymentService;
+global using BlazorShop.Server.Services.AddressService;
+global using BlazorShop.Server.Services.ProductTypeService;
 using Microsoft.AspNetCore.ResponseCompression;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using BlazorShop.Server;
+using BlazorShop.Server.Services.AddressService;
 
 var builder = WebApplication.CreateBuilder(args);
+//var paymentApiKey = builder.Configuration["Appsettings:StripeApiKey"];
+//var moviesConfig =
+//    builder.Configuration.GetSection("Appsettings").Get<WebApiOptions>();
+//paymentApiKey = moviesConfig.ApiKey;
+
+
 
 // Add services to the container.
 
@@ -28,9 +41,27 @@ builder.Services.AddScoped<IProductService, ProductService>(); //for dependencyi
 builder.Services.AddScoped<ICategoryService, CategoryService>(); //As above, add global using att top
 builder.Services.AddScoped<ICartService, CartService>(); //..
 builder.Services.AddScoped<IAuthService, AuthService>(); //..
+builder.Services.AddScoped<IOrderService, OrderService>(); //..
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
+builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)//ctrl+. install the package
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = 
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+builder.Services.AddHttpContextAccessor(); //to be able to access the user in the services
 
 var app = builder.Build();
-
+/*app.MapGet("/", () => paymentApiKey);*/ //added for payment api
 app.UseSwaggerUI(); //add swagger
 
 // Configure the HTTP request pipeline.
@@ -52,6 +83,9 @@ app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+//order is important from line 32
+app.UseAuthentication(); //adds authen middleware
+app.UseAuthorization(); //adds author middleware
 
 
 app.MapRazorPages();

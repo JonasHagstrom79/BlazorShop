@@ -15,11 +15,15 @@ namespace BlazorShop.Server.Data
             modelBuilder.Seed();            
         }
 
-        //adds to the database
+        //adds to the database(POCO)
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Address> Addresses { get; set; } //Add migration whnever we add something here
     }
 }
