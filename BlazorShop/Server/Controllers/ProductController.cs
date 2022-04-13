@@ -73,7 +73,7 @@ namespace BlazorShop.Server.Controllers
         }
 
         [HttpGet("search/{searchText}/{page}")]
-        public async Task<ActionResult<ProductSearchResultDto>> SearchProductsAsync(string searchText, int page = 1) //from search
+        public async Task<ActionResult<ServiceResponse<ProductSearchResultDto>>> SearchProductsAsync(string searchText, int page = 1) //from search ADDED SERVICERESPONSE HERE
         {
             //Get one product from server
             var result = await _productService.SearchProductsAsync(searchText, page);

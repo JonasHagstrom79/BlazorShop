@@ -122,7 +122,7 @@ else
         await CategoryService.GetAdminCategories();
     }
 
-    protected override async Task OnParametersSetAsync()//Checks the product
+    protected override async Task OnParametersSetAsync()
     {
         if (Id == 0)
         {
