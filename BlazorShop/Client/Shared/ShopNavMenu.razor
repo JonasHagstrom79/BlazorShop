@@ -1,4 +1,6 @@
 ﻿@inject ICategoryService Category
+@implements IDisposable
+
 <div class="top-row ps-3 navbar navbar-dark navbar-toggler-wrapper">
     <div class="container-fluid">        
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -34,10 +36,17 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-    }
+    }    
+
     //lifcyckle method, on inizilaze
     protected override async Task OnInitializedAsync()
     {
         await Category.GetCategories();
+        Category.OnChange += StateHasChanged; //to rerender instantly, also @implements IDisposable at top
+    }
+
+    public void Dispose()
+    {
+        Category.OnChange -= StateHasChanged; //To rerender instantly, as above
     }
 }
