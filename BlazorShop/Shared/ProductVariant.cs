@@ -22,5 +22,11 @@ namespace BlazorShop.Shared
         //add the original prize
         [Column(TypeName = "decimal(18,2)")]
         public decimal OriginalPrice { get; set; }
+        public bool Visible { get; set; } = true;
+        public bool Deleted { get; set; } = false;
+        [NotMapped] //Not a coulumn in the Database
+        public bool Editing { get; set; } = false;//Not in the database
+        [NotMapped]
+        public bool IsNew { get; set; } = false;//Not in the database
     }
 }
