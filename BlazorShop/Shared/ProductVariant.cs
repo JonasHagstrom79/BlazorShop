@@ -12,9 +12,9 @@ namespace BlazorShop.Shared
     {
         //composide primary key
         [JsonIgnore] //To breake the circular reference between product(list in a list in a list etc)
-        public Product Product { get; set; }
+        public Product? Product { get; set; } //Must be nullable
         public int ProductId { get; set; }
-        public ProductType ProductType { get; set; }
+        public ProductType? ProductType { get; set; } //Must be nullable
         public int ProductTypeId { get; set; }
         //set the price here instead
         [Column(TypeName="decimal(18,2)")]
