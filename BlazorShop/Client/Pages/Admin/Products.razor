@@ -1,5 +1,6 @@
 ﻿@page "/admin/products"
 @inject IProductService ProductService
+@inject NavigationManager NavigationManager
 @attribute [Authorize(Roles ="Admin")]
 
 <h3>Products</h3>
@@ -64,11 +65,11 @@ else
 
     void EditProduct(int productId)
     {
-        //NavigationManager.NavigateTo($"admin/product/{productId}");
+        NavigationManager.NavigateTo($"admin/product/{productId}");
     }
 
-    void CreateProduct()
+    void CreateProduct()//Change page for B
     {
-        //NavigationManager.NavigateTo("admin/product");
+        NavigationManager.NavigateTo("admin/product");
     }
 }
