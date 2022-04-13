@@ -9,7 +9,7 @@
         {
             _http = http;
         }
-        public List<Product> Products { get; set; }
+        public List<Product> Products { get; set; } = new List<Product>(); //Here no new list error
         public string Message { get; set; } = "Loading products...";
         public int CurrentPage { get; set; } = 1;
         public int PageCount { get; set; } = 0;
