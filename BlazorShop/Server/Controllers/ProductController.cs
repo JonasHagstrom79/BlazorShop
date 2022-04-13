@@ -23,6 +23,30 @@ namespace BlazorShop.Server.Controllers
             return Ok(result);
         }
 
+        [HttpPost("admin"), Authorize(Roles = "Admin")] //Post for creating
+        public async Task<ActionResult<ServiceResponse<Product>>> CreateProductAsync(Product product)
+        {
+            //Get products from datacontext
+            var result = await _productService.CreateProductAsync(product);
+            return Ok(result);
+        }
+
+        [HttpPut("admin"), Authorize(Roles = "Admin")] //Put is for update
+        public async Task<ActionResult<ServiceResponse<Product>>> UpdateProductAsync(Product product)
+        {
+            //Get products from datacontext
+            var result = await _productService.UpdateProductAsync(product);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}"), Authorize(Roles = "Admin")] //id in the route also
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteProductAsync(int id)
+        {
+            //Get products from datacontext
+            var result = await _productService.DeleteProductAsync(id);
+            return Ok(result);
+        }
+
         [HttpGet]        
         public async Task<ActionResult<ServiceResponse<List<Product>>>> GetProducts() //adds from swagger
         {
